@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: colony-api
+
+  datasource:
+    url: ${ORACLE_URL:jdbc:oracle:thin:@//oradevdb.hpcl.co.in:1551/oradevdb}
+    username: ${ORACLE_USERNAME:orainfo}
+    password: ${ORACLE_PASSWORD:information1}
+    driver-class-name: oracle.jdbc.OracleDriver
+  
+  sap:
+    datasource:
+      url: ${SAP_URL:jdbc:sqlserver://sapindb-ag-lsnr.jade.hpcl.in:16080;databaseName=ERPINTDB}
+      username: ${SAP_USERNAME:lameuser}
+      password: ${SAP_PASSWORD:lameuser}
+      schema: ${SAP_SCHEMA:MANDT300}
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
+        default_schema: ORAINFO
+
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.hpcl.colony: INFO
+    org.springframework.security: DEBUG
+
+# External integrations (to be configured)
+app:
+  ldap:
+    url: ldap://ldap.hpcl.co.in:389
+    base: ${LDAP_BASE:}
+    user-dn: ${LDAP_USER_DN:}
+    password: 1234
+  sso:
+    url: ${SSO_URL:}
+    client-id: ${SSO_CLIENT_ID:}
+    client-secret: ${SSO_CLIENT_SECRET:}
+  email:
+    host: ${EMAIL_HOST:}
+    port: ${EMAIL_PORT:587}
+    username: ${EMAIL_USERNAME:}
+    password: ${EMAIL_PASSWORD:}
+  sms:
+    endpoint: ${SMS_ENDPOINT:}
+    api-key: ${SMS_API_KEY:}
+  storage:
+    path: ${STORAGE_PATH:/data/attachments}
+  security:
+    pin: ${SECURITY_LOGIN_PIN:}
