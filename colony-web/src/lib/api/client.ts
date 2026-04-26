@@ -63,7 +63,7 @@ export async function apiRequest<T>(
     : null;
 
   if (!response.ok) {
-    throw new Error((payload as { message?: string } | null)?.message ?? 'Request failed');
+    throw new Error((payload as { message?: string } | null)?.message ?? `Request failed with status ${response.status}`);
   }
 
   return payload as T;

@@ -4,28 +4,46 @@ import { useAuthStore } from '../lib/auth/authStore';
 
 const dashboardLinks = [
   {
-    label: 'Open vendor master',
+    label: 'Inventory',
+    description: 'Manage colony inventory and assets.',
+    to: '/app/inventory',
+    allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
+    icon: 'fa-ship',
+  },
+  {
+    label: 'Electricity Reading',
+    description: 'Record and monitor electricity consumption.',
+    to: '/app/admin/electric-reading',
+    allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN', 'SECURITY'],
+    icon: 'fa-table',
+  },
+  {
+    label: 'My Complaints',
+    description: 'Resident-facing complaints and status tracking.',
+    to: '/app/complaints/my',
+    allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN'],
+    icon: 'fa-pencil-square-o',
+  },
+  {
+    label: 'Vendor Master',
     description: 'Review active vendor rows and category alignment.',
     to: '/app/masters/vendors',
     allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
+    icon: 'fa-building',
   },
   {
-    label: 'Review vendor routing',
-    description: 'Check specific vs ALL-building assignments before complaint workflow starts.',
-    to: '/app/masters/vendor-mappings',
+    label: 'Complaint Categories',
+    description: 'Manage complaint categories and mappings.',
+    to: '/app/masters/complaint-categories',
     allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
+    icon: 'fa-tags',
   },
   {
-    label: 'Open IFMS queue',
-    description: 'Jump to the pending complaint workspace scaffold.',
+    label: 'IFMS Queue',
+    description: 'Pending complaint workspace scaffold.',
     to: '/app/ifms/pending',
     allowedRoles: ['IFMS', 'ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
-  },
-  {
-    label: 'My complaints',
-    description: 'Resident-facing placeholder while complaint MVP is staged next.',
-    to: '/app/complaints/my',
-    allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN'],
+    icon: 'fa-tasks',
   },
 ];
 
@@ -39,32 +57,23 @@ export function DashboardPage() {
   const visibleLinks = dashboardLinks.filter((link) => hasAnyRole(user, link.allowedRoles));
 
   return (
-    <section className="content-stack">
-      <div className="hero-panel">
-        <div>
-          <p className="hero-panel__eyebrow">Phase 1 workspace</p>
-          <h1>Welcome back, {user.name}.</h1>
-          <p>
-            The new shell is now ready to carry auth, navigation, and master-data maintenance while the
-            complaint workflow modules are staged in later phases.
-          </p>
-        </div>
-
-        <div className="hero-panel__chips">
-          <span>{user.empNo}</span>
-          <span>{user.complexCode || 'Global access'}</span>
-          <span>{user.roles.join(' • ')}</span>
-        </div>
-      </div>
-
-      <div className="card-grid">
-        {visibleLinks.map((link) => (
-          <Link className="feature-card" key={link.to} to={link.to}>
-            <strong>{link.label}</strong>
-            <p>{link.description}</p>
-          </Link>
+    <div className="colony-dashboard container">
+      <br />
+      <div className="row justify-content-center">
+        {visibleLinks.map((link, index) => (
+          <div key={link.to} className="col-sm-3 col-md-3 col-lg-3">
+            <Link
+              className="colony-block"
+              to={link.to}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <h2 className="colony-block__title">
+                <i className={`fa ${link.icon}`} />&nbsp;&nbsp;{link.label}
+              </h2>
+            </Link>
+          </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
