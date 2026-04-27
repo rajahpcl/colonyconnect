@@ -19,10 +19,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/masters")
-@RequiredArgsConstructor
 public class MasterDataController {
 
     private final MasterDataService masterDataService;
+
+    public MasterDataController(MasterDataService masterDataService) {
+        this.masterDataService = masterDataService;
+    }
 
     @GetMapping("/vendors")
     public List<Vendor> getVendors() {

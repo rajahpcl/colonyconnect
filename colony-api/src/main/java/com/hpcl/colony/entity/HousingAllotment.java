@@ -8,7 +8,7 @@ import lombok.*;
  * Stores flat assignment for employees in a colony complex.
  */
 @Entity
-@Table(name = "housing_alloted")
+@Table(name = "housing_alloted", schema = "colonyconnect")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,4 +28,11 @@ public class HousingAllotment {
     @Id
     @Column(name = "FLAT_NO")
     private String flatNo;
+
+    public String getComplexCode() { return complexCode; }
+    public void setComplexCode(String complexCode) { this.complexCode = complexCode; }
+    public String getEmpNo() { return empNo; }
+    public void setEmpNo(String empNo) { this.empNo = empNo; }
+    public String getFlatNo() { return flatNo; }
+    public void setFlatNo(String flatNo) { this.flatNo = flatNo; }
 }

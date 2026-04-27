@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class MasterDataService {
 
     private final VendorRepository vendorRepository;
@@ -21,6 +20,22 @@ public class MasterDataService {
     private final PoItemRepository poItemRepository;
     private final IfmsMemberRepository ifmsMemberRepository;
     private final StatusCatalogRepository statusCatalogRepository;
+
+    public MasterDataService(VendorRepository vendorRepository,
+                             VendorMappingRepository vendorMappingRepository,
+                             ComplaintCategoryRepository complaintCategoryRepository,
+                             ComplaintSubcategoryRepository complaintSubcategoryRepository,
+                             PoItemRepository poItemRepository,
+                             IfmsMemberRepository ifmsMemberRepository,
+                             StatusCatalogRepository statusCatalogRepository) {
+        this.vendorRepository = vendorRepository;
+        this.vendorMappingRepository = vendorMappingRepository;
+        this.complaintCategoryRepository = complaintCategoryRepository;
+        this.complaintSubcategoryRepository = complaintSubcategoryRepository;
+        this.poItemRepository = poItemRepository;
+        this.ifmsMemberRepository = ifmsMemberRepository;
+        this.statusCatalogRepository = statusCatalogRepository;
+    }
 
     // ---- Vendors ----
 

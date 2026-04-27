@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class VendorRoutingService {
 
     private final VendorMappingRepository vendorMappingRepository;
+
+    public VendorRoutingService(VendorMappingRepository vendorMappingRepository) {
+        this.vendorMappingRepository = vendorMappingRepository;
+    }
 
     /**
      * Resolve vendor number for a given complex/building/category.

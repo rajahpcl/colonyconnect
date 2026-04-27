@@ -8,7 +8,7 @@ import lombok.*;
  * ACTIVE column: 'A' = active, 'I' = inactive/deleted.
  */
 @Entity
-@Table(name = "COLONY_COMPLAINT_CATEGORY")
+@Table(name = "COLONY_COMPLAINT_CATEGORY", schema = "colonyconnect")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +27,11 @@ public class ComplaintCategory {
     /** 'A' = active, 'I' = inactive */
     @Column(name = "ACTIVE")
     private String active;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getActive() { return active; }
+    public void setActive(String active) { this.active = active; }
 }

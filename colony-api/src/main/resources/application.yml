@@ -3,10 +3,10 @@ spring:
     name: colony-api
 
   datasource:
-    url: ${ORACLE_URL:jdbc:oracle:thin:@//oradevdb.hpcl.co.in:1551/oradevdb}
-    username: ${ORACLE_USERNAME:orainfo}
-    password: ${ORACLE_PASSWORD:information1}
-    driver-class-name: oracle.jdbc.OracleDriver
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/COLONYCONNECT}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
   
   sap:
     datasource:
@@ -22,9 +22,9 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.OracleDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        default_schema: ORAINFO
+        
 
   flyway:
     enabled: false

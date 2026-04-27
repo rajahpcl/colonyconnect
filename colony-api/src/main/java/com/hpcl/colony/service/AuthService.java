@@ -18,12 +18,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final HousingComplexRepository housingComplexRepository;
     private final IfmsMemberRepository ifmsMemberRepository;
+
+    public AuthService(UserRepository userRepository, 
+                       HousingComplexRepository housingComplexRepository, 
+                       IfmsMemberRepository ifmsMemberRepository) {
+        this.userRepository = userRepository;
+        this.housingComplexRepository = housingComplexRepository;
+        this.ifmsMemberRepository = ifmsMemberRepository;
+    }
 
     public LoginResponse login(LoginRequest request) {
         User user = findUser(request.getEmpNo());
@@ -58,14 +65,14 @@ public class AuthService {
         }
 
         return LoginResponse.builder()
-            .empNo(user.getEmpNo())
-            .name(user.getName())
-            .role(primaryRole)
-            .roles(roles)
-            .complexCode(complexCode)
-            .vehicleRegistered(false) // TODO: Check COLONY_VEHICLEINFO
-            .redirectUrl(determineRedirectUrl(roles))
-            .build();
+                .empNo(user.getEmpNo())
+                .name(user.getName())
+                .role(primaryRole)
+                .roles(roles)
+                .complexCode(complexCode)
+                .vehicleRegistered(false) // TODO: Check COLONY_VEHICLEINFO
+                .redirectUrl(determineRedirectUrl(roles))
+                .build();
     }
 
     private List<String> resolveRoles(User user) {
@@ -78,7 +85,8 @@ public class AuthService {
         }
 
         // Check if user is an IFMS/BVG team member
-        Optional<IfmsMember> ifmsMember = ifmsMemberRepository.findByBvgTeamMemberIdAndStatusGreaterThan(user.getEmpNo(), 0);
+        Optional<IfmsMember> ifmsMember = ifmsMemberRepository
+                .findByBvgTeamMemberIdAndStatusGreaterThan(user.getEmpNo(), 0);
         if (ifmsMember.isPresent()) {
             roles.add("IFMS");
         }
@@ -103,6 +111,6 @@ public class AuthService {
 
     private User findUser(String empNo) {
         return userRepository.findByEmpNo(empNo)
-            .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + empNo));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + empNo));
     }
 }

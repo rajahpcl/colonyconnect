@@ -20,10 +20,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Value("${app.security.pin:}")
     private String securityPin;
@@ -74,12 +77,12 @@ public class AuthController {
         }
 
         LoginResponse response = LoginResponse.builder()
-            .empNo("SECURITY")
-            .name("Security User")
-            .role("SECURITY")
-            .roles(List.of("SECURITY"))
-            .redirectUrl("/app/security/home")
-            .build();
+                .empNo("SECURITY")
+                .name("Security User")
+                .role("SECURITY")
+                .roles(List.of("SECURITY"))
+                .redirectUrl("/app/security/home")
+                .build();
         storeSession(session, response);
 
         return ResponseEntity.ok(response);
@@ -89,12 +92,12 @@ public class AuthController {
     public ResponseEntity<?> startSso() {
         if (!StringUtils.hasText(ssoUrl)) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(Map.of("message", "SSO is not configured"));
+                    .body(Map.of("message", "SSO is not configured"));
         }
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(ssoUrl))
-            .build();
+                .location(URI.create(ssoUrl))
+                .build();
     }
 
     @GetMapping("/sso/callback")

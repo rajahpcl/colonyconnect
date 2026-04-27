@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * STATUS column: integer, > 0 = active, 0 = soft-deleted.
  */
 @Entity
-@Table(name = "COLONY_PO_MASTER")
+@Table(name = "COLONY_PO_MASTER", schema = "colonyconnect")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -66,4 +66,35 @@ public class PoItem {
 
     @Column(name = "UPDATED_ON")
     private Timestamp updatedOn;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getPoCategory() { return poCategory; }
+    public void setPoCategory(String poCategory) { this.poCategory = poCategory; }
+    public String getAgtmItem() { return agtmItem; }
+    public void setAgtmItem(String agtmItem) { this.agtmItem = agtmItem; }
+    public String getMaterialDescription() { return materialDescription; }
+    public void setMaterialDescription(String materialDescription) { this.materialDescription = materialDescription; }
+    public BigDecimal getContractRate() { return contractRate; }
+    public void setContractRate(BigDecimal contractRate) { this.contractRate = contractRate; }
+    public String getPoUnit() { return poUnit; }
+    public void setPoUnit(String poUnit) { this.poUnit = poUnit; }
+    public String getAccAssignmentCat() { return accAssignmentCat; }
+    public void setAccAssignmentCat(String accAssignmentCat) { this.accAssignmentCat = accAssignmentCat; }
+    public String getCostCenter() { return costCenter; }
+    public void setCostCenter(String costCenter) { this.costCenter = costCenter; }
+    public String getGlAccount() { return glAccount; }
+    public void setGlAccount(String glAccount) { this.glAccount = glAccount; }
+    public String getMaterial() { return material; }
+    public void setMaterial(String material) { this.material = material; }
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+    public String getInsertedBy() { return insertedBy; }
+    public void setInsertedBy(String insertedBy) { this.insertedBy = insertedBy; }
+    public Timestamp getInsertedOn() { return insertedOn; }
+    public void setInsertedOn(Timestamp insertedOn) { this.insertedOn = insertedOn; }
+    public String getUpdatedBy() { return updatedBy; }
+    public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
+    public Timestamp getUpdatedOn() { return updatedOn; }
+    public void setUpdatedOn(Timestamp updatedOn) { this.updatedOn = updatedOn; }
 }

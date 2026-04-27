@@ -9,7 +9,7 @@ import lombok.*;
  * COMPLEX_ADMIN is a comma-separated list of employee numbers.
  */
 @Entity
-@Table(name = "housing_complex_list")
+@Table(name = "housing_complex_list", schema = "colonyconnect")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +27,11 @@ public class HousingComplex {
     /** Comma-separated list of admin employee numbers */
     @Column(name = "COMPLEX_ADMIN")
     private String complexAdmin;
+
+    public String getComplexCode() { return complexCode; }
+    public void setComplexCode(String complexCode) { this.complexCode = complexCode; }
+    public String getComplexName() { return complexName; }
+    public void setComplexName(String complexName) { this.complexName = complexName; }
+    public String getComplexAdmin() { return complexAdmin; }
+    public void setComplexAdmin(String complexAdmin) { this.complexAdmin = complexAdmin; }
 }

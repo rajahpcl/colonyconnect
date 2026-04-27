@@ -8,7 +8,7 @@ import lombok.*;
  * ACTIVE column: null = active, '0' = soft-deleted.
  */
 @Entity
-@Table(name = "COLONY_VENDOR_MSTR")
+@Table(name = "COLONY_VENDOR_MSTR", schema = "colonyconnect")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,4 +39,19 @@ public class Vendor {
     /** null = active, '0' = deleted */
     @Column(name = "ACTIVE")
     private String active;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    public String getActive() { return active; }
+    public void setActive(String active) { this.active = active; }
 }
