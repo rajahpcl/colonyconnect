@@ -18,8 +18,8 @@ const navItems: NavItem[] = [
   {
     label: 'Complaints', icon: 'fa-pencil-square-o', to: '#', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
     children: [
-      { label: 'New Complaint', icon: '', to: '/app/complaints/new', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN'] },
-      { label: 'My Complaints', icon: '', to: '/app/complaints/my', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN'] },
+      { label: 'New Complaint', icon: '', to: '/app/complaints/new', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'My Request', icon: '', to: '/app/complaints/my', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
     ],
   },
   {

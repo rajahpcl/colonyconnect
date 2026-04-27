@@ -11,6 +11,26 @@ import { PlaceholderPage } from './pages/PlaceholderPage';
 import { SecurityLoginPage } from './pages/SecurityLoginPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { MasterDataPage } from './pages/masters/MasterDataPage';
+import { NewComplaintPage } from './pages/complaints/NewComplaintPage';
+import { MyComplaintsPage } from './pages/complaints/MyComplaintsPage';
+import { ComplaintDetailPage } from './pages/complaints/ComplaintDetailPage';
+import { InventoryListPage } from './pages/inventory/InventoryListPage';
+import { InventoryFormPage } from './pages/inventory/InventoryFormPage';
+import { VehicleListPage } from './pages/vehicles/VehicleListPage';
+import { VehicleFormPage } from './pages/vehicles/VehicleFormPage';
+import { ReadingsPage } from './pages/readings/ReadingsPage';
+import { POListPage } from './pages/po/POListPage';
+import { ReportsPage, DashboardReportPage, AllReportsPage } from './pages/reports';
+import { PendingTasksPage, RequestListPage, ProxyRequestPage } from './pages/ifms';
+import {
+  AdminDashboardPage,
+  AdminComplaintListPage,
+  ElectricRatePage,
+  AdminRolesPage,
+  ElectricReadingFormPage,
+  IFMSMasterPage,
+  AssignFlatsPage,
+} from './pages/admin';
 
 const adminRoles = ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'];
 
@@ -77,22 +97,82 @@ function App() {
           <Route
             element={
               <ProtectedRoute allowedRoles={adminRoles}>
-                <DashboardPage />
+                <AdminDashboardPage />
               </ProtectedRoute>
             }
             path="admin/dashboard"
           />
           <Route
             element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <AdminComplaintListPage />
+              </ProtectedRoute>
+            }
+            path="admin/complaints"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <ElectricRatePage />
+              </ProtectedRoute>
+            }
+            path="admin/electric-rates"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <AdminRolesPage />
+              </ProtectedRoute>
+            }
+            path="admin/roles"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <ElectricReadingFormPage />
+              </ProtectedRoute>
+            }
+            path="admin/electric-reading"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <IFMSMasterPage />
+              </ProtectedRoute>
+            }
+            path="admin/ifms-master"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <AssignFlatsPage />
+              </ProtectedRoute>
+            }
+            path="admin/assign-flats"
+          />
+          <Route
+            element={
               <ProtectedRoute allowedRoles={['IFMS', ...adminRoles]}>
-                <PlaceholderPage
-                  description="The IFMS queue and complaint workbench are queued for the next implementation phase, but the route and role shell are ready."
-                  eyebrow="Phase 3 preview"
-                  title="IFMS queue scaffold"
-                />
+                <PendingTasksPage />
               </ProtectedRoute>
             }
             path="ifms/pending"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['IFMS', ...adminRoles]}>
+                <RequestListPage />
+              </ProtectedRoute>
+            }
+            path="ifms/requests"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['IFMS', ...adminRoles]}>
+                <ProxyRequestPage />
+              </ProtectedRoute>
+            }
+            path="ifms/proxy"
           />
           <Route
             element={
@@ -107,14 +187,60 @@ function App() {
             path="security/home"
           />
           <Route
-            element={
-              <PlaceholderPage
-                description="Resident complaint creation and listing will land in the complaint MVP phase, after this master-data shell."
-                eyebrow="Phase 2 preview"
-                title="Resident complaint area"
-              />
-            }
+            element={<NewComplaintPage />}
+            path="complaints/new"
+          />
+          <Route
+            element={<MyComplaintsPage />}
             path="complaints/my"
+          />
+          <Route
+            element={<ComplaintDetailPage />}
+            path="complaints/:id"
+          />
+          <Route
+            element={<InventoryListPage />}
+            path="inventory/list"
+          />
+          <Route
+            element={<InventoryFormPage />}
+            path="inventory/new"
+          />
+          <Route
+            element={<InventoryFormPage />}
+            path="inventory/edit/:id"
+          />
+          <Route
+            element={<VehicleListPage />}
+            path="vehicles/list"
+          />
+          <Route
+            element={<VehicleFormPage />}
+            path="vehicles/new"
+          />
+          <Route
+            element={<VehicleFormPage />}
+            path="vehicles/edit/:id"
+          />
+          <Route
+            element={<ReadingsPage />}
+            path="readings/electric"
+          />
+          <Route
+            element={<POListPage />}
+            path="po/list"
+          />
+          <Route
+            element={<ReportsPage />}
+            path="reports"
+          />
+          <Route
+            element={<DashboardReportPage />}
+            path="reports/dashboard"
+          />
+          <Route
+            element={<AllReportsPage />}
+            path="reports/all"
           />
           <Route
             element={

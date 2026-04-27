@@ -1,0 +1,21 @@
+.container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }
+.header h1 { margin: 0; font-size: 1.8rem; }
+.table { width: 100%; border-collapse: collapse; background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.table thead { background: #f8f8f8; }
+.table th { padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #ddd; }
+.table td { padding: 1rem; border-bottom: 1px solid #eee; }
+.table tbody tr:hover { background: #f9f9f9; }
+.form-control { padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 0.95rem; }
+.form-control:focus { outline: none; border-color: #0066cc; box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+.btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+.btn-primary { background: #0066cc; color: white; }
+.btn-primary:hover { background: #0052a3; }
+.btn-secondary { background: #f0f0f0; color: #333; }
+.btn-secondary:hover { background: #e0e0e0; }
+.status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
+.status-active { background: #d4edda; color: #155724; }
+.status-inactive { background: #f8d7da; color: #721c24; }
+.error { color: #e74c3c; margin: 1rem 0; }
+.success { color: #27ae60; margin: 1rem 0; }
+.table-responsive { overflow-x: auto; }
