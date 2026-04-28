@@ -16,11 +16,11 @@ public interface PoItemRepository extends JpaRepository<PoItem, Long> {
     Integer findMaxAgtmItemByPoCategory(@Param("poCategory") String poCategory);
 
     /** Find all active PO items ordered by AGTM_ITEM */
-    @Query("select p from PoItem p where p.status > 0 order by cast(p.agtmItem as integer) asc")
+    @Query("select p from PoItem p where p.status > 0 order by p.agtmItem asc")
     List<PoItem> findAllActiveOrderByAgtmItemAsc();
 
     /** Find active PO items by category */
-    @Query("select p from PoItem p where p.status > 0 and p.poCategory = :poCategory order by cast(p.agtmItem as integer) asc")
+    @Query("select p from PoItem p where p.status > 0 and p.poCategory = :poCategory order by p.agtmItem asc")
     List<PoItem> findAllActiveByPoCategoryOrderByAgtmItemAsc(@Param("poCategory") String poCategory);
 
     /** Find distinct active PO categories */

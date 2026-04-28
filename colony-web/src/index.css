@@ -581,42 +581,219 @@ ul, li { list-style: none; padding: 0; margin: 0; }
   color: var(--hpcl-gray-dark);
 }
 
+/* ========== MASTER LAYOUT (Modern UI Standards) ========== */
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: white;
+  padding: 24px 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--hpcl-border);
+}
+
+.section-header h1 {
+  margin: 0 0 8px 0;
+  font-family: var(--font-heading);
+  font-size: 28px;
+  color: var(--hpcl-navy);
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--hpcl-gray);
+  font-size: 15px;
+}
+
+.section-header__eyebrow {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--hpcl-blue);
+  letter-spacing: 1px;
+  margin-bottom: 5px !important;
+}
+
+.section-header__stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--hpcl-gray);
+  font-weight: 500;
+}
+
+.master-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.editor-card, .table-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--hpcl-border);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.editor-card__header, .table-card__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--hpcl-border);
+  padding-bottom: 15px;
+}
+
+.editor-card__header h2, .table-card__toolbar h2 {
+  margin: 5px 0 0 0;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  color: var(--hpcl-gray-dark);
+}
+
+.editor-card__eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hpcl-gray);
+  text-transform: uppercase;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--hpcl-gray-dark);
+}
+
+.text-input {
+  padding: 10px 14px;
+  border: 1px solid var(--hpcl-border);
+  border-radius: 8px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  transition: all 0.2s;
+  background: var(--hpcl-gray-light);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--hpcl-blue);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 64, 133, 0.1);
+}
+
+.primary-button {
+  background: var(--hpcl-navy);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-heading);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--hpcl-blue);
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ghost-button {
+  background: transparent;
+  color: var(--hpcl-blue);
+  border: 1px solid var(--hpcl-blue);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ghost-button:hover {
+  background: rgba(0, 64, 133, 0.05);
+}
+
+.ghost-button--danger {
+  color: var(--hpcl-red);
+  border-color: var(--hpcl-red);
+}
+
+.ghost-button--danger:hover {
+  background: rgba(251, 50, 50, 0.05);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--hpcl-gray-light);
+  color: var(--hpcl-gray);
+  font-weight: 600;
+  border-bottom: 2px solid var(--hpcl-border);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hpcl-border);
+  color: var(--hpcl-gray-dark);
+}
+
+.data-table tr:hover td {
+  background: #f8fafc;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
 /* ========== RESPONSIVE ========== */
-@media (max-width: 992px) {
+/* Trigger hamburger menu early at 1200px to prevent nav bar collision with the logo */
+@media (max-width: 1200px) {
   .colony-header__logo-area { display: none; }
   .colony-header__right { width: 100%; }
   .colony-header__small-logo { display: block; width: 40px; margin-right: 15px; }
+  .colony-header__hp-img { max-width: 100%; height: auto; }
   .colony-header__app-title { font-size: 20px; }
   .col-sm-3, .col-md-3, .col-lg-3 { width: 50%; }
   
-  .modern-login-image-side { flex: 1; }
-  .modern-login-overlay { padding: 2rem; }
-  .modern-login-brand-title { font-size: 2rem; }
-  
-  .colony-header__hp-img { max-width: 100%; height: auto; }
-}
-
-@media (max-width: 768px) {
-  .modern-login-split { flex-direction: column; }
-  .modern-login-image-side { 
-    flex: none; 
-    height: 30vh; 
-    min-height: 250px;
-  }
-  .modern-login-brand-logo { display: none; }
-  .modern-login-brand-title { font-size: 1.5rem; }
-  .modern-login-brand-subtitle { display: none; }
-  
-  .modern-login-form-side { 
-    border-radius: 20px 20px 0 0;
-    margin-top: -20px;
-    padding: 2rem 1.5rem;
-  }
-  
-  .modern-login-mobile-logo { display: block; }
-  .modern-login-header { margin-bottom: 2rem; text-align: center; }
-  .modern-login-header h2 { font-size: 1.75rem; }
-
   /* Existing Header Mobile Overrides */
   .colony-header__title-row { flex-wrap: wrap; justify-content: space-between; }
   .colony-header__user-info { width: 100%; margin: 10px 0 0; text-align: right; font-size: 12px; }
@@ -644,6 +821,46 @@ ul, li { list-style: none; padding: 0; margin: 0; }
   .colony-nav-link { width: 100%; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
   .colony-dropdown-menu { position: static; box-shadow: none; display: none; }
   .colony-dropdown-menu--visible { display: block; }
+}
+
+@media (max-width: 992px) {
+  .master-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .section-header__stats {
+    align-items: flex-start;
+  }
+  
+  .modern-login-image-side { flex: 1; }
+  .modern-login-overlay { padding: 2rem; }
+  .modern-login-brand-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  .modern-login-split { flex-direction: column; }
+  .modern-login-image-side { 
+    flex: none; 
+    height: 30vh; 
+    min-height: 250px;
+  }
+  .modern-login-brand-logo { display: none; }
+  .modern-login-brand-title { font-size: 1.5rem; }
+  .modern-login-brand-subtitle { display: none; }
+  
+  .modern-login-form-side { 
+    border-radius: 20px 20px 0 0;
+    margin-top: -20px;
+    padding: 2rem 1.5rem;
+  }
+  
+  .modern-login-mobile-logo { display: block; }
+  .modern-login-header { margin-bottom: 2rem; text-align: center; }
+  .modern-login-header h2 { font-size: 1.75rem; }
   
   .col-sm-3, .col-md-3, .col-lg-3 { width: 100%; }
 }

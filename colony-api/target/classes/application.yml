@@ -3,9 +3,9 @@ spring:
     name: colony-api
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/COLONYCONNECT}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/colonyconnect}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:admin}
+    password: ${DB_PASSWORD:Hpcl@123}
     driver-class-name: org.postgresql.Driver
   
   sap:

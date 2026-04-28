@@ -1,0 +1,445 @@
+# Colony Management: Missing Logic & CRUD Implementation Plan
+
+Comprehensive migration of business logic from legacy JSP pages to the new Spring Boot API + React frontend.
+
+---
+
+## Current State Analysis
+
+### What EXISTS in the new app (API + Frontend)
+| Module | Backend Entity | Backend CRUD Service | Backend Controller | Frontend API Client | Frontend UI Page |
+|--------|:-:|:-:|:-:|:-:|:-:|
+| **Vendor Master** | ✅ `Vendor.java` | ✅ Full CRUD | ✅ | ✅ generic `masterData.ts` | ✅ `MasterDataPage` (config-driven) |
+| **Vendor Mapping** | ✅ `VendorMapping.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **Complaint Category** | ✅ `ComplaintCategory.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **Complaint Subcategory** | ✅ `ComplaintSubcategory.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **PO Items (Master)** | ✅ `PoItem.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **IFMS/BVG Members** | ✅ `IfmsMember.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **Status Catalog** | ✅ `StatusCatalog.java` | ✅ Full CRUD | ✅ | ✅ generic | ✅ config-driven |
+| **Housing Complex** | ✅ `HousingComplex.java` | ❌ Read-only (auth) | ❌ | ❌ | ❌ |
+| **Housing Allotment** | ✅ `HousingAllotment.java` | ❌ | ❌ | ❌ | ❌ |
+
+### What is MISSING — Stub pages exist but have NO working backend
+| Module | Old JSP | DB Table(s) | Backend Entity | Service | Controller | Frontend |
+|--------|---------|-------------|:-:|:-:|:-:|:-:|
+| **Vehicle Info** | `vehicle_info.jsp` | `COLONY_VEHICLEINFO` | ❌ | ❌ | ❌ | Stub only (wrong fields) |
+| **Electric Rate** | `electric_rate.jsp` | `COLONY_ELECTRIC_RATE` | ❌ | ❌ | ❌ | Stub only |
+| **Electric Reading** | `electric_reading.jsp` | `COLONY_ELECTRIC_READING` | ❌ | ❌ | ❌ | Stub only |
+| **Building Master** | `buildingMstr.jsp` | `COLONY_BUILDING_MSTR` | ❌ | ❌ | ❌ | ❌ |
+| **Colony Assign** | `colonyassign.jsp` | `HOUSING_ALLOTED` | Partial | ❌ | ❌ | Stub only |
+| **Inventory** | `Inventory.jsp` / `Inventory_List.jsp` | `COLONY_INVENTORY_MAIN`, `COLONY_INVENTORY_ENTRY`, `COLONY_INVENTORY_MASTER`, `COLONY_INVENTORY_HISTORY` | ❌ | ❌ | ❌ | Stub only (wrong fields) |
+| **Complaint Request** | `request.jsp` / `AdminViewList.jsp` | `COLONY_REQUEST`, `COLONY_ACTION_HISTORY` | ❌ | ❌ | ❌ | Stub only |
+| **PO Submitted** | `generate_voucher.jsp` | `COLONY_PO_SUBMITTED` | ❌ | ❌ | ❌ | ❌ |
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Q1: Database dialect.** The DDLs reference Oracle `VARCHAR2` / `SYSDATE` / `NUMBER`, but `application.yml` uses PostgreSQL. Should I write entities for **PostgreSQL** (as currently configured)?
+
+> [!IMPORTANT]
+> **Q2: Scope control.** This plan covers the full CRUD lifecycle for all 8 missing modules. Should I implement them all in one pass, or would you prefer I tackle them in phases (e.g., Phase 1: Vehicle + Electric + Building; Phase 2: Inventory + Requests)?
+
+> [!NOTE]
+> **Q3: Master data config approach.** The existing master pages (Vendor, Category, etc.) use a config-driven `MasterDataPage` component. Some of the new modules (Vehicle, Electric Reading, Inventory) have complex forms that don't fit the generic config model—they need dedicated form pages. I'll use the generic approach for simple masters (Building, Electric Rate) and build dedicated pages for complex ones. Is that acceptable?
+
+---
+
+## Proposed Changes
+
+### Phase 1: Backend Entities & Repositories
+
+---
+
+#### [NEW] VehicleInfo.java
+`colony-api/src/main/java/com/hpcl/colony/entity/VehicleInfo.java`
+
+Entity mapping to `COLONY_VEHICLEINFO` table:
+- Fields: `id`, `empNo`, `make`, `model`, `registrationNo` (DB: `REGISTRAION_NO`), `vehicleType`, `color`, `flag` (0=active, 1=deleted, -1=no vehicle), `updateDate`
+- Matches JSP: `vehicle_info.jsp` line 152 INSERT, line 276 SELECT
+
+#### [NEW] ElectricRate.java
+`colony-api/src/main/java/com/hpcl/colony/entity/ElectricRate.java`
+
+Entity mapping to `COLONY_ELECTRIC_RATE`:
+- Fields: `id`, `enteredDate`, `tarrifCategory`, `fixedCharge`, `energyCharge`, `wheelingCharge`, `raCharge`, `facRate`, `updateBy`, `updateDate`
+- Matches JSP: `electric_rate.jsp` line 221 INSERT, line 369 SELECT
+
+#### [NEW] ElectricReading.java
+`colony-api/src/main/java/com/hpcl/colony/entity/ElectricReading.java`
+
+Entity mapping to `COLONY_ELECTRIC_READING`:
+- Fields: `id`, `enteredDate`, `initReading`, `finalReading`, `flatNo`, `empNo`, `updatedBy`, `updatedDate`, `totalAmount`, `status`
+- Matches JSP: `electric_reading.jsp` line 531 INSERT
+
+#### [NEW] BuildingMaster.java
+`colony-api/src/main/java/com/hpcl/colony/entity/BuildingMaster.java`
+
+Entity mapping to `COLONY_BUILDING_MSTR`:
+- Fields: `colonyCode` (PK composite or use generated), `building`, `admin`, `escalation`, `vendorCode`
+- Matches JSP: `buildingMstr.jsp` line 41 SELECT, line 75 INSERT
+
+#### [NEW] ColonyRequest.java
+`colony-api/src/main/java/com/hpcl/colony/entity/ColonyRequest.java`
+
+Entity mapping to `COLONY_REQUEST`:
+- Fields: `id`, `empNo`, `subcategoryId`, `compDetails`, `submitDate`, `updateDate`, `complexCode`, `vendor`, `submitBy`, `flatNo`, `status`, `uploadFile`, `uploadFile1`, `po`, `poName`, `glCode`, `poRate`, `quantity`, `total`, `feedback`
+
+#### [NEW] ActionHistory.java
+`colony-api/src/main/java/com/hpcl/colony/entity/ActionHistory.java`
+
+Entity mapping to `COLONY_ACTION_HISTORY`:
+- Fields: `reqId`, `status`, `updateBy`, `updateDate`, `remark`
+
+#### [NEW] InventoryMain.java
+`colony-api/src/main/java/com/hpcl/colony/entity/InventoryMain.java`
+
+Entity mapping to `COLONY_INVENTORY_MAIN`:
+- Fields: `id`, `empNo`, `contactNo`, `complexCode`, `flatNo`, `inventoryTakenOn`, `electricityReading`, `reason`, `status`, `updateBy`, `updateDate`, `securityInfo`, `ackRemark`, `occupiedOn`, `type`
+
+#### [NEW] InventoryEntry.java
+`colony-api/src/main/java/com/hpcl/colony/entity/InventoryEntry.java`
+
+Entity mapping to `COLONY_INVENTORY_ENTRY`:
+- Fields: `id`, `masterId`, `handingQty`, `takingQty`, `remarks`, `mainId`
+
+#### [NEW] InventoryMaster.java
+`colony-api/src/main/java/com/hpcl/colony/entity/InventoryMaster.java`
+
+Entity mapping to `COLONY_INVENTORY_MASTER` (lookup table):
+- Fields: `id`, `description`, `category`
+
+#### [NEW] PoSubmitted.java
+`colony-api/src/main/java/com/hpcl/colony/entity/PoSubmitted.java`
+
+Entity mapping to `COLONY_PO_SUBMITTED`:
+- Fields: `id`, `reqId`, `po`, `poName`, `glCode`, `poRate`, `quantity`, `total`, `status`, `insertedBy`, `insertedOn`, `updatedBy`, `updatedOn`, `remarks`, `deletedBy`, `deletedOn`, `poCategory`, `costCenter`
+
+#### [MODIFY] HousingAllotment.java — Add missing columns
+Currently has only `empNo`, `complexCode`, `flatNo`. Add: `inventoryFile`, `undertakingFile`, `occupyDate`
+
+#### [NEW] HousingMaster.java
+Entity mapping to `HOUSING_MASTER`:
+- Fields: composite PK (`complexCode`, `building`, `flatNo`), `area`, `bathroomNo`, `mdFacing`, `bedroomNo`, `floor`, etc.
+- Required by Electric Reading's flat-number lookups
+
+---
+
+#### Repositories (10 new)
+
+| File | Key Queries |
+|------|-------------|
+| [NEW] `VehicleInfoRepository.java` | `findByEmpNoAndFlag(empNo, "0")`, `countByEmpNoAndVehicleTypeAndFlag(empNo, type, "0")` |
+| [NEW] `ElectricRateRepository.java` | `findAllByOrderByIdAsc()`, `findByEnteredDate(date)` |
+| [NEW] `ElectricReadingRepository.java` | `findByFlatNoAndEnteredDate(flatNo, date)`, custom filter queries |
+| [NEW] `BuildingMasterRepository.java` | `findAll()`, `findByColonyCode(code)` |
+| [NEW] `ColonyRequestRepository.java` | `findByEmpNo(empNo)`, `findByComplexCodeAndStatus(code, status)` |
+| [NEW] `ActionHistoryRepository.java` | `findByReqId(reqId)` |
+| [NEW] `InventoryMainRepository.java` | `findByComplexCode(code)`, `findByEmpNo(empNo)` |
+| [NEW] `InventoryEntryRepository.java` | `findByMainId(mainId)` |
+| [NEW] `InventoryMasterRepository.java` | `findAll()` (lookup catalog) |
+| [NEW] `PoSubmittedRepository.java` | `findByReqId(reqId)`, `findByStatusGreaterThan(0)` |
+| [NEW] `HousingMasterRepository.java` | `findByComplexCode(code)`, `findByComplexCodeAndBuilding(code, bldg)` |
+
+---
+
+### Phase 2: Backend Services & Controllers
+
+---
+
+#### [NEW] VehicleService.java + VehicleController.java
+
+**Business logic from `vehicle_info.jsp`:**
+- `GET /api/v1/vehicles` → List vehicles for current user (`WHERE emp_no=? AND flag='0'`)
+- `POST /api/v1/vehicles` → Add vehicle (limit 2 per vehicle type per employee)
+- `DELETE /api/v1/vehicles/{id}` → Soft-delete (`SET flag='1'`)
+- `POST /api/v1/vehicles/no-vehicle` → Mark as no-vehicle (`flag='-1'`)
+- Vehicle makes list (static enum from JSP: Chevrolet, Honda, etc.)
+
+**Table display columns:** Make, Model, Registration No, Vehicle Type, Color
+
+---
+
+#### [NEW] ElectricRateService.java + ElectricRateController.java
+
+**Business logic from `electric_rate.jsp`:**
+- `GET /api/v1/electric-rates` → List all rates ordered by ID
+- `POST /api/v1/electric-rates` → Bulk insert 4 tariff categories for a month (`0-100`, `101-300`, `301-500`, `>500`). Reject if rates already exist for the month.
+- `PATCH /api/v1/electric-rates/{id}` → Update individual rate row
+- **Tariff slabs are fixed:** `["0-100", "101-300", "301-500", ">500"]`
+
+**Table display columns:** Date, Tariff Category, Fixed Charge, Energy Charge, Wheeling Charge, RA Charge, FAC Rate
+
+---
+
+#### [NEW] ElectricReadingService.java + ElectricReadingController.java
+
+**Business logic from `electric_reading.jsp` (most complex page):**
+- `GET /api/v1/electric-readings` → List readings with date filter
+- `POST /api/v1/electric-readings` → Submit reading with **bill calculation**
+- `PATCH /api/v1/electric-readings/{id}` → Update reading
+- `DELETE /api/v1/electric-readings/{id}` → Delete reading
+- `POST /api/v1/electric-readings/approve` → Batch approve (`SET status='Approved'`)
+- `GET /api/v1/electric-readings/calculate` → Calculator endpoint for on-demand bill calc
+
+**Bill calculation logic (from JSP lines 426-512):**
+1. Look up rates for the given month from `COLONY_ELECTRIC_RATE`
+2. Calculate `unit_consumed = final_reading - initial_reading` (across multiple meters)
+3. Apply tiered slab calculation:
+   - ≤100 units: rate slab 1
+   - 101-300: slab 1 for first 100 + slab 2 for remainder
+   - 301-500: slab 1(100) + slab 2(200) + slab 3(remainder)
+   - >500: slab 1(100) + slab 2(200) + slab 3(200) + slab 4(remainder)
+4. Calculate: `Amount = EnergyCharge + RACCharge + FixedCharge + FACCharge + WheelingCharge`
+5. Apply taxes: `Govt Electricity Duty (16%)` + `MH Govt Tax (0.2604 per unit)`
+6. Final: `RELIANCE_AMT = Amount + GovtDuty + TaxOnSale`
+
+**Cascading dropdowns:**
+- `GET /api/v1/housing/complexes` → Complex list (filtered by admin role)
+- `GET /api/v1/housing/buildings?complexCode=X` → Buildings for complex
+- `GET /api/v1/housing/flats?complexCode=X&building=Y` → Flat list
+- `GET /api/v1/housing/employee?flatNo=X&complexCode=Y` → Employee allotted to flat
+- `GET /api/v1/electric-readings/last?flatNo=X` → Last reading for flat
+
+---
+
+#### [NEW] BuildingMasterService.java + BuildingMasterController.java
+
+**Business logic from `buildingMstr.jsp`:**
+- `GET /api/v1/building-masters` → List all buildings
+- `POST /api/v1/building-masters` → Add building (colony code, building name, admin, escalation, vendor code)
+- `PATCH /api/v1/building-masters/{colonyCode}` → Update building
+- Dropdowns populate from: `HOUSING_COMPLEX_LIST` (complexes) and `COLONY_VENDOR_MSTR` (vendor codes)
+
+**Table display columns:** Colony Code, Building, Admin, Escalation, Vendor Code
+
+---
+
+#### [NEW] HousingService.java + HousingController.java
+
+**Business logic from `colonyassign.jsp`:**
+- `GET /api/v1/housing/allotted?complexCode=X` → List allotments for complex
+- `POST /api/v1/housing/allotted` → Assign employee to flat
+- `PATCH /api/v1/housing/allotted` → Update assignment
+- Reuses `HOUSING_ALLOTED` and `HOUSING_COMPLEX_LIST` tables
+
+**Table display columns:** Complex Code, Employee No, Flat No
+
+---
+
+#### [NEW] InventoryService.java + InventoryController.java
+
+**Business logic from `Inventory.jsp` and `Inventory_List.jsp`:**
+- `GET /api/v1/inventory` → List inventory submissions (by complex/status)
+- `GET /api/v1/inventory/{id}` → Get single inventory with entries
+- `POST /api/v1/inventory` → Create inventory main + entries (multi-row)
+- `PATCH /api/v1/inventory/{id}/status` → Update status + history
+- `GET /api/v1/inventory/items` → Get inventory master catalog (lookup)
+
+**Tables involved:** `COLONY_INVENTORY_MAIN` → main record, `COLONY_INVENTORY_ENTRY` → line items, `COLONY_INVENTORY_MASTER` → item catalog, `COLONY_INVENTORY_HISTORY` → status audit trail
+
+---
+
+#### [NEW] ComplaintRequestService.java + ComplaintRequestController.java
+
+**Business logic from `request.jsp` and `AdminViewList.jsp`:**
+- `GET /api/v1/requests` → List complaints (employee view)
+- `GET /api/v1/requests/admin` → Admin view with filters
+- `POST /api/v1/requests` → Submit complaint with file upload
+- `PATCH /api/v1/requests/{id}/status` → Update status + action history
+- `POST /api/v1/requests/{id}/po` → Attach PO to request
+- `GET /api/v1/requests/{id}/history` → Get action history
+
+**Status workflow** (from `COLONY_STATUS` mapping):
+```
+Submitted(10) → Assigned(15) → In Progress(20) → 
+Work Done(30) → Verified(40) → Closed(50)
+```
+
+---
+
+#### [NEW] PoSubmittedService.java + PoSubmittedController.java
+
+**Business logic from `generate_voucher.jsp`:**
+- `GET /api/v1/po-submitted?reqId=X` → PO items for a request
+- `POST /api/v1/po-submitted` → Add PO line item to request
+- `DELETE /api/v1/po-submitted/{id}` → Soft-delete PO line
+- Used during complaint workflow to link PO items to maintenance requests
+
+---
+
+### Phase 3: Frontend — API Clients & Pages
+
+---
+
+#### [MODIFY] `colony-web/src/lib/api/vehicles.ts` — Rewrite to match actual DB schema
+
+Current stub uses wrong field names (`vehicleNo`, `owner`). Replace with:
+```ts
+type Vehicle = {
+  id?: number; empNo: string; make: string; model: string;
+  registrationNo: string; vehicleType: string; color: string;
+  flag?: string; updateDate?: string;
+};
+```
+Match API paths to `GET/POST/DELETE /api/v1/vehicles`
+
+#### [MODIFY] `colony-web/src/lib/api/readings.ts` — Rewrite for electric readings
+
+Update types and endpoints to match `COLONY_ELECTRIC_READING` schema.
+
+#### [MODIFY] `colony-web/src/lib/api/inventory.ts` — Rewrite for inventory
+
+Update types to match `COLONY_INVENTORY_MAIN` + entries.
+
+#### [MODIFY] `colony-web/src/lib/api/po.ts` — Rewrite for PO submitted
+
+Current is generic — refactor to `COLONY_PO_SUBMITTED` fields.
+
+#### [NEW] `colony-web/src/lib/api/electricRates.ts` — New API client
+
+#### [NEW] `colony-web/src/lib/api/buildings.ts` — New API client
+
+#### [NEW] `colony-web/src/lib/api/housing.ts` — New API client (cascading lookups)
+
+#### [NEW] `colony-web/src/lib/api/requests.ts` — New API client for complaint requests
+
+---
+
+#### Frontend Pages
+
+| Page | Type | Replaces JSP |
+|------|------|-------------|
+| [MODIFY] `VehicleListPage.tsx` | Dedicated | `vehicle_info.jsp` — show user's vehicles + add form |
+| [MODIFY] `VehicleFormPage.tsx` | Dedicated | Proper vehicle type/make dropdowns |
+| [MODIFY] `ReadingsPage.tsx` | Dedicated | `electric_reading.jsp` — cascading dropdowns, calculator |
+| [MODIFY] `InventoryListPage.tsx` | Dedicated | `Inventory_List.jsp` |
+| [MODIFY] `InventoryFormPage.tsx` | Dedicated | `Inventory.jsp` — multi-row entry |
+| [MODIFY] `POListPage.tsx` | Dedicated | PO submitted items list |
+| [NEW] `BuildingMasterPage.tsx` | Config-driven | `buildingMstr.jsp` — add to masters config |
+| [NEW] `ElectricRateMasterPage.tsx` | Dedicated | `electric_rate.jsp` — 4-row tariff entry |
+| [MODIFY] `ElectricRatePage.tsx` (admin) | Connect to API | Currently stub |
+| [MODIFY] `ElectricReadingFormPage.tsx` (admin) | Connect to API | Currently stub |
+| [MODIFY] `AssignFlatsPage.tsx` | Connect to API | `colonyassign.jsp` |
+| [MODIFY] `NewComplaintPage.tsx` | Connect to API | `request.jsp` |
+| [MODIFY] `MyComplaintsPage.tsx` | Connect to API | `myRequestList.jsp` |
+| [MODIFY] `AdminComplaintListPage.tsx` | Connect to API | `AdminViewList.jsp` |
+| [MODIFY] `ComplaintDetailPage.tsx` | Connect to API | Status workflow + PO attach |
+
+---
+
+### Phase 4: Master Config Updates & Route Wiring
+
+#### [MODIFY] `colony-web/src/lib/masters/config.ts`
+
+Add `building-masters` config:
+```ts
+'building-masters': {
+  title: 'Building Master',
+  resource: 'building-masters',
+  fields: [
+    { key: 'colonyCode', label: 'Colony Code', ... },
+    { key: 'building', label: 'Building', ... },
+    { key: 'admin', label: 'Admin', ... },
+    { key: 'escalation', label: 'Escalation', ... },
+    { key: 'vendorCode', label: 'Vendor Code', ... },
+  ]
+}
+```
+
+#### [MODIFY] `App.tsx` — Add routes for new/modified pages
+
+Add route for `/app/masters/building-masters`.
+
+---
+
+## JSP → DB Table → API → Frontend Field Mapping
+
+### Vehicle Info
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| `type` | `VEHICLE_TYPE` | `vehicleType` | Vehicle Type |
+| `make` | `MAKE` | `make` | Make |
+| `model` | `MODEL` | `model` | Model |
+| `reg_no` | `REGISTRAION_NO` | `registrationNo` | Registration No |
+| `colour` | `COLOR` | `color` | Color |
+| — | `FLAG` | `flag` | (internal: 0=active, 1=deleted, -1=no vehicle) |
+
+### Electric Rate
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| `enterd_date` | `ENTERD_DATE` | `enteredDate` | Date |
+| `tarrif` | `TARRIF_CATEGORY` | `tarrifCategory` | Tariff Category |
+| `fixed` | `FIXED_CHARGE` | `fixedCharge` | Fixed Charge |
+| `energy` | `ENERGY_CHARGE` | `energyCharge` | Energy Charge |
+| `wheeling` | `WHEELING_CHARGE` | `wheelingCharge` | Wheeling Charge |
+| `ra_charge` | `RA_CHARGE` | `raCharge` | RA Charge |
+| `fac` | `FAC_RATE` | `facRate` | FAC Rate |
+
+### Electric Reading
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| `enterd_date` | `ENTERD_DATE` | `enteredDate` | Date |
+| `init` | `INIT_READING` | `initReading` | Initial Reading |
+| `finalreding` | `FINAL_READING` | `finalReading` | Final Reading |
+| `flatno` | `FLAT_NO` | `flatNo` | Flat No |
+| `employee` | `EMP_NO` | `empNo` | Employee |
+| — | `TOTAL_AMOUNT` | `totalAmount` | Total Amount |
+| — | `STATUS` | `status` | Status |
+
+### Building Master
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| `ccode` | `COLONY_CODE` | `colonyCode` | Colony/Complex |
+| `bldg` | `BUILDING` | `building` | Building |
+| `adm` | `ADMIN` | `admin` | Admin |
+| `esc` | `ESCALATION` | `escalation` | Escalation |
+| `vcode` | `VENDOR_CODE` | `vendorCode` | Vendor Code |
+
+### Colony Request (Complaint)
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| — | `ID` | `id` | Request ID |
+| — | `EMP_NO` | `empNo` | Employee No |
+| — | `SUBCATEGORY_ID` | `subcategoryId` | Sub-Category |
+| — | `COMP_DETAILS` | `compDetails` | Complaint Details |
+| — | `SUBMIT_DATE` | `submitDate` | Submit Date |
+| — | `COMPLEX_CODE` | `complexCode` | Complex |
+| — | `VENDOR` | `vendor` | Vendor |
+| — | `FLAT_NO` | `flatNo` | Flat No |
+| — | `STATUS` | `status` | Status |
+
+### Inventory Main
+| JSP Field | DB Column | API JSON Field | Frontend Label |
+|-----------|-----------|---------------|----------------|
+| — | `ID` | `id` | ID |
+| — | `EMP_NO` | `empNo` | Employee No |
+| — | `COMPLEX_CODE` | `complexCode` | Complex |
+| — | `FLAT_NO` | `flatNo` | Flat No |
+| — | `STATUS` | `status` | Status |
+| — | `TYPE` | `type` | Type |
+
+---
+
+## Verification Plan
+
+### Automated Tests
+
+1. **API compilation check**: `cd colony-api && mvn compile` — ensures all entities, repos, services, controllers compile
+2. **Frontend build check**: `cd colony-web && npm run build` — ensures no TypeScript errors
+3. **Browser test**: Navigate to each page, verify data loads, forms submit, tables populate
+
+### Manual Verification
+
+1. Test each CRUD operation through the browser:
+   - Vehicle: Add, list, delete
+   - Electric Rate: Add month rates, verify duplicate month rejection
+   - Electric Reading: Full flow with cascading dropdowns + bill calculation
+   - Building Master: Add/edit
+   - Colony Assign: Assign flat, update
+   - Inventory: Create with entries, status transitions
+   - Complaint: Submit, view, admin workflow
+   - PO Submitted: Link PO to complaint
+2. Verify field mappings match legacy data display
+3. Verify soft-delete patterns match legacy behavior (flag-based vs status-based)

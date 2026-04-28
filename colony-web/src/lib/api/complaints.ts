@@ -51,12 +51,12 @@ export type ComplaintResponse = {
 };
 
 export async function listComplaintCategories() {
-  return apiRequest<ComplaintCategory[]>('/api/v1/complaints/categories');
+  return apiRequest<ComplaintCategory[]>('/api/v1/masters/complaint-categories');
 }
 
 export async function listComplaintSubCategories(categoryId: string | number) {
   return apiRequest<ComplaintSubCategory[]>(
-    `/api/v1/complaints/subcategories${toQueryString({ categoryId: categoryId.toString() })}`
+    `/api/v1/masters/complaint-subcategories${toQueryString({ categoryId: categoryId.toString() })}`
   );
 }
 

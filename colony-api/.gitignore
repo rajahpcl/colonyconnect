@@ -1,0 +1,199 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+replay_pid*
+
+# ============================================================
+# SPRING BOOT - BACKEND
+# ============================================================
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn/timing.properties
+
+# Gradle (if used)
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Spring Boot application properties with secrets
+src/main/resources/application-prod.properties
+src/main/resources/application-prod.yml
+src/main/resources/application-local.properties
+src/main/resources/application-local.yml
+src/main/resources/application-dev.properties
+src/main/resources/application-dev.yml
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+logs/
+log/
+
+# JAR / WAR / EAR
+*.jar
+*.war
+*.ear
+*.nar
+
+# Package Files
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# ============================================================
+# REACT JS - FRONTEND
+# ============================================================
+
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production build output
+/build
+/dist
+
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# npm / yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Lock files (choose one - commit only the one your team uses)
+# Uncomment the one you DO NOT use:
+# package-lock.json
+# yarn.lock
+
+# Cache
+.npm
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.cache/
+
+# Testing
+/coverage
+
+# Optional: Storybook build output
+storybook-static/
+.out/
+
+# ============================================================
+# IDEs AND EDITORS
+# ============================================================
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# NetBeans
+nbproject/
+nbdist/
+nb-configuration.xml
+
+# STS (Spring Tool Suite)
+.apt_generated
+.apt_generated_test
+
+# ============================================================
+# OS FILES
+# ============================================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ============================================================
+# MISCELLANEOUS
+# ============================================================
+
+# MinIO / file upload temp dirs (if applicable)
+uploads/
+temp-uploads/
+file-storage/
+
+# Secrets and keys - NEVER commit
+*.pem
+*.p12
+*.pfx
+*.keystore
+*.jks
+secrets.properties
+secrets.yml
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.h2.mv.db
+*.h2.trace.db

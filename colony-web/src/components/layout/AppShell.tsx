@@ -33,7 +33,7 @@ const navItems: NavItem[] = [
   {
     label: 'Admin', icon: 'fa-user', to: '#', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'],
     children: [
-      { label: 'Complaint List', icon: '', to: '/app/admin/dashboard', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Complaint List', icon: '', to: '/app/admin/complaints', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'Electric Rate', icon: '', to: '/app/admin/electric-rate', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'Electric Reading', icon: '', to: '/app/admin/electric-reading', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'Admin Roles', icon: '', to: '/app/admin/roles', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },

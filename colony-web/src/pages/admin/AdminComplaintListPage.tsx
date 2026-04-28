@@ -1,154 +1,129 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { listAdminComplaints, updateComplaintStatus } from '../../lib/api/admin';
+import { apiRequest } from '../../lib/api/client';
 import '../common.css';
 
 export function AdminComplaintListPage() {
-  const [filter, setFilter] = useState('');
-  const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
-  const [remark, setRemark] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [selectedComplexes, setSelectedComplexes] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [isVendor, setIsVendor] = useState('All');
+
+  const [complexes, setComplexes] = useState<any[]>([]);
+  const [statuses, setStatuses] = useState<any[]>([]);
+
+  useEffect(() => {
+    apiRequest<any[]>('/api/v1/housing/complexes').then(setComplexes).catch(() => {});
+    apiRequest<any[]>('/api/v1/complaints/statuses').then(setStatuses).catch(() => {});
+  }, []);
 
   const { data: complaints = [], isLoading, refetch } = useQuery({
-    queryKey: ['admin-complaints', filter],
-    queryFn: () => listAdminComplaints({ status: filter || undefined }),
+    queryKey: ['admin-complaints', fromDate, toDate, selectedComplexes, selectedStatuses, isVendor],
+    queryFn: () => listAdminComplaints({
+      fromDate,
+      toDate,
+      complexCodes: selectedComplexes.join(','),
+      statuses: selectedStatuses.join(','),
+      isVendor
+    }),
   });
 
-  const { mutate: updateStatus, isPending } = useMutation({
-    mutationFn: (data: { id: number; status: string; remark: string }) =>
-      updateComplaintStatus(data.id, data.status, data.remark),
-    onSuccess: () => {
-      setSelectedComplaint(null);
-      setRemark('');
-      refetch();
-    },
-  });
+  const handleComplexChange = (e: any) => {
+    const value = Array.from(e.target.selectedOptions, (option: any) => option.value);
+    setSelectedComplexes(value);
+  };
+
+  const handleStatusChange = (e: any) => {
+    const value = Array.from(e.target.selectedOptions, (option: any) => option.value);
+    setSelectedStatuses(value);
+  };
 
   return (
-    <div className="container">
-      <div className="header">
-        <h1>Complaint Management</h1>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="form-control"
-          style={{ maxWidth: '200px' }}
-        >
-          <option value="">All Status</option>
-          <option value="submitted">Submitted</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
+    <div className="content-stack" style={{ padding: '20px' }}>
+      <div className="section-header">
+        <div>
+          <h1>Complaint List</h1>
+          <p>Admin view for filtering and updating complaints</p>
+        </div>
       </div>
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Flat No.</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {complaints.map((complaint: any) => (
-                <tr key={complaint.id}>
-                  <td>#{complaint.id}</td>
-                  <td>{complaint.flatNo}</td>
-                  <td>{complaint.categoryName}</td>
-                  <td>
-                    <span className={`status-badge status-${complaint.status?.toLowerCase()}`}>
-                      {complaint.status}
-                    </span>
-                  </td>
-                  <td>{new Date(complaint.submitDate).toLocaleDateString()}</td>
-                  <td>
-                    <button
-                      onClick={() => setSelectedComplaint(complaint)}
-                      className="btn-link"
-                      style={{ fontSize: '0.9rem' }}
-                    >
-                      Update
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="editor-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+        <div className="form-field">
+          <label>From Date:</label>
+          <input type="date" className="text-input" value={fromDate} onChange={e => setFromDate(e.target.value)} />
         </div>
-      )}
+        <div className="form-field">
+          <label>To Date:</label>
+          <input type="date" className="text-input" value={toDate} onChange={e => setToDate(e.target.value)} />
+        </div>
+        <div className="form-field">
+          <label>Colony:</label>
+          <select multiple className="text-input" value={selectedComplexes} onChange={handleComplexChange} style={{ height: '100px' }}>
+            {complexes.map(c => <option key={c.complexCode} value={c.complexCode}>{c.complexName}</option>)}
+          </select>
+        </div>
+        <div className="form-field">
+          <label>Status:</label>
+          <select multiple className="text-input" value={selectedStatuses} onChange={handleStatusChange} style={{ height: '100px' }}>
+            {statuses.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </div>
+        <div className="form-field">
+          <label>Assign to Vendor:</label>
+          <div>
+            <label style={{ marginRight: '10px' }}><input type="radio" value="All" checked={isVendor === 'All'} onChange={e => setIsVendor(e.target.value)} /> All</label>
+            <label style={{ marginRight: '10px' }}><input type="radio" value="Yes" checked={isVendor === 'Yes'} onChange={e => setIsVendor(e.target.value)} /> Yes</label>
+            <label><input type="radio" value="No" checked={isVendor === 'No'} onChange={e => setIsVendor(e.target.value)} /> No</label>
+          </div>
+        </div>
+        <div className="form-field" style={{ justifyContent: 'flex-end' }}>
+          <button className="primary-button" onClick={() => refetch()}>Search</button>
+        </div>
+      </div>
 
-      {selectedComplaint && (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: '#fff',
-          padding: '2rem',
-          borderRadius: '4px',
-          boxShadow: '0 5px 20px rgba(0,0,0,0.3)',
-          zIndex: 1000,
-          minWidth: '400px',
-        }}>
-          <h3>Update Complaint Status</h3>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Status</label>
-            <select className="form-control" defaultValue={selectedComplaint.status}>
-              <option value="submitted">Submitted</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
+      <div className="table-card">
+        {isLoading ? (
+          <p>Loading complaints...</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Complaint ID</th>
+                  <th>Complex</th>
+                  <th>Flat no.</th>
+                  <th>Complaint Type</th>
+                  <th>Complaint Details</th>
+                  <th>Status</th>
+                  <th>Vendor</th>
+                  <th>Entry in System</th>
+                </tr>
+              </thead>
+              <tbody>
+                {complaints.map((c: any) => (
+                  <tr key={c.id}>
+                    <td><a href={`#${c.id}`}>{c.id}</a></td>
+                    <td>{c.complexCode}</td>
+                    <td>{c.flatNo}</td>
+                    <td>{c.categoryName} {c.subcategoryName ? `> ${c.subcategoryName}` : ''}</td>
+                    <td>{c.compDetails}</td>
+                    <td>{c.statusName}</td>
+                    <td>{c.vendorName}</td>
+                    <td>{c.submitDate}</td>
+                  </tr>
+                ))}
+                {complaints.length === 0 && (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '20px' }}>No complaints found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Remark</label>
-            <textarea
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              className="form-control"
-              rows={3}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button
-              onClick={() => setSelectedComplaint(null)}
-              className="btn btn-secondary"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => updateStatus({
-                id: selectedComplaint.id,
-                status: selectedComplaint.status,
-                remark,
-              })}
-              disabled={isPending}
-              className="btn btn-primary"
-            >
-              {isPending ? 'Saving...' : 'Save'}
-            </button>
-          </div>
-        </div>
-      )}
-      {selectedComplaint && (
-        <div
-          onClick={() => setSelectedComplaint(null)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0,0,0,0.3)',
-            zIndex: 999,
-          }}
-        />
-      )}
+        )}
+      </div>
     </div>
   );
 }
