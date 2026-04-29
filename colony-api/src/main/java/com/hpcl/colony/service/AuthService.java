@@ -68,7 +68,7 @@ public class AuthService {
         List<HousingComplex> adminComplexes = housingComplexRepository.findByComplexAdminContaining(user.getEmpNo());
         if (!adminComplexes.isEmpty()) {
             complexCode = adminComplexes.get(0).getComplexCode();
-            complexName = adminComplexes.get(0).getName();
+            complexName = adminComplexes.get(0).getComplexName();
         } else {
             // If not an admin, try to get from housing allotment
             List<com.hpcl.colony.entity.HousingAllotment> allotments = housingAllotmentRepository.findByEmpNo(user.getEmpNo());
@@ -84,7 +84,7 @@ public class AuthService {
                 // Fetch complex name
                 Optional<HousingComplex> hc = housingComplexRepository.findById(complexCode);
                 if (hc.isPresent()) {
-                    complexName = hc.get().getName();
+                    complexName = hc.get().getComplexName();
                 }
             }
         }
