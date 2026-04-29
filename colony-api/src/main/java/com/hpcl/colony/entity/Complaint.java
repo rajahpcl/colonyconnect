@@ -30,6 +30,9 @@ public class Complaint {
     @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
 
+    @Column(name = "UPDATED_BY")
+    private String updatedBy;
+
     @Column(name = "COMPLEX_CODE")
     private String complexCode;
 

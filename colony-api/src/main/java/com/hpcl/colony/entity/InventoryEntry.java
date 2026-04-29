@@ -15,7 +15,7 @@ public class InventoryEntry {
     private Long id;
 
     @Column(name = "MASTER_ID")
-    private String masterId;
+    private Long masterId;
 
     @Column(name = "HANDING_QTY")
     private String handingQty;
@@ -27,5 +27,5 @@ public class InventoryEntry {
     private String remarks;
 
     @Column(name = "MAIN_ID")
-    private String mainId;
+    private Long mainId;
 }

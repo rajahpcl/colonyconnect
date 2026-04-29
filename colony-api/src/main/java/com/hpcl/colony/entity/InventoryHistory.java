@@ -2,6 +2,7 @@ package com.hpcl.colony.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "COLONY_INVENTORY_HISTORY", schema = "colonyconnect")
@@ -15,7 +16,7 @@ public class InventoryHistory {
     private Long id;
 
     @Column(name = "UPDATE_DATE")
-    private String updateDate;
+    private LocalDateTime updateDate;
 
     @Column(name = "UPDATE_BY")
     private String updateBy;
@@ -27,5 +28,5 @@ public class InventoryHistory {
     private String remarks;
 
     @Column(name = "MAIN_ID")
-    private String mainId;
+    private Long mainId;
 }
