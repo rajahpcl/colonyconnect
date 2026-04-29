@@ -51,12 +51,25 @@ const navSections: NavSection[] = [
     title: 'Masters',
     items: [
       { label: 'Vendor Master', to: '/app/masters/vendors', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
-      { label: 'Vendor Mapping', to: '/app/masters/vendor-mappings', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
-      { label: 'Complaint Categories', to: '/app/masters/complaint-categories', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
-      { label: 'Complaint SubCategories', to: '/app/masters/complaint-subcategories', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Colony Vendor Mapping', to: '/app/masters/vendor-mappings', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Add Complaint Category', to: '/app/masters/complaint-categories', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Add Complaint SubCategory', to: '/app/masters/complaint-subcategories', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'PO Master', to: '/app/masters/po-items', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'IFMS Members', to: '/app/masters/ifms-members', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
       { label: 'Statuses', to: '/app/masters/statuses', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+    ],
+  },
+  {
+    title: 'Resident Dashboard',
+    items: [
+      { label: 'Vehicle Info', to: '/app/vehicles/list', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Electric Reading', to: '/app/readings/electric', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Inventory Acknowledgement', to: '/app/resident/inventory-ack', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Inventory HR', to: '/app/resident/inventory-hr', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Inventory Report', to: '/app/resident/inventory-report', allowedRoles: ['RESIDENT', 'FAMILY_MEMBER', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Family Login Access', to: '/app/resident/family-login', allowedRoles: ['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Approved Make List', to: '/app/resident/approved-makes', allowedRoles: ['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Contact Details', to: '/app/resident/contact-details', allowedRoles: ['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN'] },
     ],
   },
   {
@@ -69,17 +82,29 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: 'Reports',
+    title: 'Report',
     items: [
-      { label: 'Dashboard Report', to: '/app/reports/dashboard', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
-      { label: 'All Reports', to: '/app/reports/all', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
-      { label: 'Analytics', to: '/app/reports', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Dashboard', to: '/app/reports/dashboard', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Report', to: '/app/reports/all', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Occupancy Report', to: '/app/reports/occupancy', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Vehicle Report', to: '/app/reports/vehicles', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'Matrix Report PO Items v/s Complaints', to: '/app/reports/matrix-po-complaints', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
+      { label: 'PO Items v/s Total Qty', to: '/app/reports/po-qty', allowedRoles: ['ADMIN', 'COMPLEX_ADMIN', 'SYSTEM_ADMIN'] },
     ],
   },
   {
-    title: 'Security',
+    title: 'Security Tasks',
     items: [
       { label: 'Security Home', to: '/app/security/home', allowedRoles: ['SECURITY'] },
+      { label: 'Inventory Check', to: '/app/security/inventory', allowedRoles: ['SECURITY'] },
+      { label: 'Electric Readings', to: '/app/security/electric', allowedRoles: ['SECURITY'] },
+    ],
+  },
+  {
+    title: 'Vendor Portal',
+    items: [
+      { label: 'Assigned Complaints', to: '/app/vendor/complaints', allowedRoles: ['VENDOR'] },
+      { label: 'PO Tasks', to: '/app/vendor/po', allowedRoles: ['VENDOR'] },
     ],
   },
 ];

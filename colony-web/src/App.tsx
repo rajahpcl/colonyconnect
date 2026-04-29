@@ -187,6 +187,66 @@ function App() {
             path="security/home"
           />
           <Route
+            element={
+              <ProtectedRoute allowedRoles={['SECURITY']}>
+                <PlaceholderPage
+                  description="Security inventory check workflow will be implemented in a later phase."
+                  eyebrow="Security Tasks"
+                  title="Inventory Check"
+                />
+              </ProtectedRoute>
+            }
+            path="security/inventory"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['SECURITY']}>
+                <PlaceholderPage
+                  description="Security electricity reading workflows will be implemented in a later phase."
+                  eyebrow="Security Tasks"
+                  title="Electric Readings"
+                />
+              </ProtectedRoute>
+            }
+            path="security/electric"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage
+                  description="Family member login management will be implemented in a later phase."
+                  eyebrow="Resident Dashboard"
+                  title="Family Login"
+                />
+              </ProtectedRoute>
+            }
+            path="resident/family-login"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['VENDOR']}>
+                <PlaceholderPage
+                  description="Vendor complaint workflow will be implemented in a later phase."
+                  eyebrow="Vendor Portal"
+                  title="Assigned Complaints"
+                />
+              </ProtectedRoute>
+            }
+            path="vendor/complaints"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['VENDOR']}>
+                <PlaceholderPage
+                  description="Vendor PO task workflows will be implemented in a later phase."
+                  eyebrow="Vendor Portal"
+                  title="PO Tasks"
+                />
+              </ProtectedRoute>
+            }
+            path="vendor/po"
+          />
+          <Route
             element={<NewComplaintPage />}
             path="complaints/new"
           />
@@ -241,6 +301,78 @@ function App() {
           <Route
             element={<AllReportsPage />}
             path="reports/all"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <PlaceholderPage description="Occupancy Report will be implemented here." eyebrow="Report" title="Occupancy Report" />
+              </ProtectedRoute>
+            }
+            path="reports/occupancy"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <PlaceholderPage description="Vehicle Report will be implemented here." eyebrow="Report" title="Vehicle Report" />
+              </ProtectedRoute>
+            }
+            path="reports/vehicles"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <PlaceholderPage description="Matrix Report PO Items v/s Complaints will be implemented here." eyebrow="Report" title="Matrix Report" />
+              </ProtectedRoute>
+            }
+            path="reports/matrix-po-complaints"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={adminRoles}>
+                <PlaceholderPage description="PO Items v/s Total Qty will be implemented here." eyebrow="Report" title="PO Items Qty" />
+              </ProtectedRoute>
+            }
+            path="reports/po-qty"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage description="Inventory Acknowledgement will be implemented here." eyebrow="Resident Dashboard" title="Inventory Acknowledgement" />
+              </ProtectedRoute>
+            }
+            path="resident/inventory-ack"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage description="Inventory HR will be implemented here." eyebrow="Resident Dashboard" title="Inventory HR" />
+              </ProtectedRoute>
+            }
+            path="resident/inventory-hr"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage description="Inventory Report will be implemented here." eyebrow="Resident Dashboard" title="Inventory Report" />
+              </ProtectedRoute>
+            }
+            path="resident/inventory-report"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage description="Approved Make List will be implemented here." eyebrow="Resident Dashboard" title="Approved Make List" />
+              </ProtectedRoute>
+            }
+            path="resident/approved-makes"
+          />
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={['RESIDENT', 'COMPLEX_ADMIN', 'ADMIN', 'SYSTEM_ADMIN']}>
+                <PlaceholderPage description="Contact Details will be implemented here." eyebrow="Resident Dashboard" title="Contact Details" />
+              </ProtectedRoute>
+            }
+            path="resident/contact-details"
           />
           <Route
             element={

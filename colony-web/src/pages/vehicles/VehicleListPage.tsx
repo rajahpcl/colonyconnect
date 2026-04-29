@@ -11,9 +11,8 @@ export function VehicleListPage() {
   });
 
   const filtered = vehicles.filter((v: any) =>
-    v.vehicleNo?.toLowerCase().includes(search.toLowerCase()) ||
-    v.owner?.toLowerCase().includes(search.toLowerCase()) ||
-    v.flatNo?.toLowerCase().includes(search.toLowerCase())
+    v.registrationNo?.toLowerCase().includes(search.toLowerCase()) ||
+    v.empNo?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -35,25 +34,21 @@ export function VehicleListPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Vehicle No.</th>
+                <th>Registration No.</th>
                 <th>Type</th>
-                <th>Owner</th>
-                <th>Flat No.</th>
-                <th>Status</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Employee No.</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((vehicle: any) => (
                 <tr key={vehicle.id}>
-                  <td><strong>{vehicle.vehicleNo}</strong></td>
-                  <td>{vehicle.type}</td>
-                  <td>{vehicle.owner}</td>
-                  <td>{vehicle.flatNo}</td>
-                  <td>
-                    <span className={`status-badge status-${vehicle.status}`}>
-                      {vehicle.status}
-                    </span>
-                  </td>
+                  <td><strong>{vehicle.registrationNo}</strong></td>
+                  <td>{vehicle.vehicleType}</td>
+                  <td>{vehicle.make}</td>
+                  <td>{vehicle.model}</td>
+                  <td>{vehicle.empNo}</td>
                 </tr>
               ))}
             </tbody>

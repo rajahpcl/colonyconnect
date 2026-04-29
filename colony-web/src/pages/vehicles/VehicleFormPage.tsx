@@ -5,11 +5,12 @@ import { createVehicle, getVehicle, updateVehicle } from '../../lib/api/vehicles
 import '../common.css';
 
 type VehicleForm = {
-  vehicleNo: string;
-  type: string;
-  owner: string;
-  flatNo: string;
-  status: 'active' | 'inactive';
+  registrationNo: string;
+  vehicleType: '2-Wheeler' | '4-Wheeler';
+  make: string;
+  model: string;
+  empNo: string;
+  color: string;
 };
 
 export function VehicleFormPage() {
@@ -26,7 +27,7 @@ export function VehicleFormPage() {
   const { mutate: save, isPending } = useMutation({
     mutationFn: (data: VehicleForm) =>
       id ? updateVehicle(parseInt(id), data) : createVehicle(data),
-    onSuccess: () => navigate('/app/vehicles/list'),
+    onSuccess: () => navigate('/app/resident/vehicles'),
   });
 
   return (
@@ -34,33 +35,37 @@ export function VehicleFormPage() {
       <h1>{id ? 'Edit' : 'Add'} Vehicle</h1>
       <form onSubmit={handleSubmit((data) => save(data))}>
         <div style={{ marginBottom: '1rem' }}>
-          <label>Vehicle No.</label>
-          <input {...register('vehicleNo', { required: true })} className="form-control" />
-          {errors.vehicleNo && <span className="error">Required</span>}
+          <label>Registration No.</label>
+          <input {...register('registrationNo', { required: true })} className="form-control" />
+          {errors.registrationNo && <span className="error">Required</span>}
         </div>
         <div style={{ marginBottom: '1rem' }}>
-          <label>Type</label>
-          <input {...register('type', { required: true })} className="form-control" placeholder="e.g., Car, Bike" />
-          {errors.type && <span className="error">Required</span>}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Owner</label>
-          <input {...register('owner', { required: true })} className="form-control" />
-          {errors.owner && <span className="error">Required</span>}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Flat No.</label>
-          <input {...register('flatNo', { required: true })} className="form-control" />
-          {errors.flatNo && <span className="error">Required</span>}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Status</label>
-          <select {...register('status', { required: true })} className="form-control">
-            <option value="">Select Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+          <label>Vehicle Type</label>
+          <select {...register('vehicleType', { required: true })} className="form-control">
+            <option value="">Select Type</option>
+            <option value="2-Wheeler">2-Wheeler</option>
+            <option value="4-Wheeler">4-Wheeler</option>
           </select>
-          {errors.status && <span className="error">Required</span>}
+          {errors.vehicleType && <span className="error">Required</span>}
+        </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <label>Make (Brand)</label>
+          <input {...register('make', { required: true })} className="form-control" />
+          {errors.make && <span className="error">Required</span>}
+        </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <label>Model</label>
+          <input {...register('model', { required: true })} className="form-control" />
+          {errors.model && <span className="error">Required</span>}
+        </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <label>Employee No.</label>
+          <input {...register('empNo', { required: true })} className="form-control" />
+          {errors.empNo && <span className="error">Required</span>}
+        </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <label>Color</label>
+          <input {...register('color')} className="form-control" />
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button type="button" onClick={() => navigate(-1)} className="btn btn-secondary">

@@ -84,7 +84,7 @@ export function NewComplaintPage() {
         .then((data) => {
           setSubcategories(data);
           if (data && data.length > 0) {
-            setValue('subcategoryId', data[0].id);
+            setValue('subcategoryId', data[0].id.toString());
           } else {
             setValue('subcategoryId', '');
           }

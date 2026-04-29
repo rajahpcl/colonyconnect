@@ -1,0 +1,5 @@
+com\hpcl\colony\controller\MasterDataControllerTest.class
+com\hpcl\colony\service\MasterDataServiceTest.class
+com\hpcl\colony\service\VendorRoutingServiceTest.class
+com\hpcl\colony\controller\AuthControllerTest.class
+com\hpcl\colony\service\AuthServiceTest.class

@@ -2,12 +2,13 @@ import { apiRequest, toQueryString } from './client';
 
 export type Vehicle = {
   id?: number;
-  vehicleNo: string;
-  type: string;
-  owner: string;
-  flatNo: string;
-  registrationDate?: string;
-  status: 'active' | 'inactive';
+  registrationNo: string;
+  vehicleType: string;
+  make: string;
+  model: string;
+  empNo: string;
+  color?: string;
+  flag?: string;
 };
 
 export async function listVehicles(params?: Record<string, any>) {
