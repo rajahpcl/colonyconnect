@@ -34,19 +34,22 @@ public class ComplaintService {
     private final StatusCatalogRepository statusRepository;
     private final VendorRepository vendorRepository;
     private final HousingComplexRepository complexRepository;
+    private final com.hpcl.colony.repository.HousingAllotmentRepository housingAllotmentRepository;
 
     public ComplaintService(ComplaintRepository complaintRepository,
                             ComplaintSubcategoryRepository subcategoryRepository,
                             ComplaintCategoryRepository categoryRepository,
                             StatusCatalogRepository statusRepository,
                             VendorRepository vendorRepository,
-                            HousingComplexRepository complexRepository) {
+                            HousingComplexRepository complexRepository,
+                            com.hpcl.colony.repository.HousingAllotmentRepository housingAllotmentRepository) {
         this.complaintRepository = complaintRepository;
         this.subcategoryRepository = subcategoryRepository;
         this.categoryRepository = categoryRepository;
         this.statusRepository = statusRepository;
         this.vendorRepository = vendorRepository;
         this.complexRepository = complexRepository;
+        this.housingAllotmentRepository = housingAllotmentRepository;
     }
 
     public List<ComplaintDto> listComplaints(String fromDateStr, String toDateStr, List<String> complexCodes, List<Long> statuses, String isVendor, String adminEmpNo) {
@@ -148,8 +151,16 @@ public class ComplaintService {
         c.setSubmitBy(empNo);
         c.setSubcategoryId(dto.getSubcategoryId());
         c.setCompDetails(dto.getCompDetails());
-        c.setComplexCode(dto.getComplexCode());
-        c.setFlatNo(dto.getFlatNo());
+        
+        List<com.hpcl.colony.entity.HousingAllotment> allotments = housingAllotmentRepository.findByEmpNo(empNo);
+        if (!allotments.isEmpty()) {
+            c.setComplexCode(allotments.get(0).getComplexCode());
+            c.setFlatNo(allotments.get(0).getFlatNo());
+        } else {
+            c.setComplexCode(dto.getComplexCode());
+            c.setFlatNo(dto.getFlatNo());
+        }
+
         c.setStatus(10L); // 10 is usually "Submitted" or "Pending"
         
         Complaint saved = complaintRepository.save(c);

@@ -23,13 +23,16 @@ public class AuthService {
     private final UserRepository userRepository;
     private final HousingComplexRepository housingComplexRepository;
     private final IfmsMemberRepository ifmsMemberRepository;
+    private final com.hpcl.colony.repository.HousingAllotmentRepository housingAllotmentRepository;
 
     public AuthService(UserRepository userRepository, 
                        HousingComplexRepository housingComplexRepository, 
-                       IfmsMemberRepository ifmsMemberRepository) {
+                       IfmsMemberRepository ifmsMemberRepository,
+                       com.hpcl.colony.repository.HousingAllotmentRepository housingAllotmentRepository) {
         this.userRepository = userRepository;
         this.housingComplexRepository = housingComplexRepository;
         this.ifmsMemberRepository = ifmsMemberRepository;
+        this.housingAllotmentRepository = housingAllotmentRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -59,9 +62,31 @@ public class AuthService {
 
         // Determine complex code from housing_complex_list if user is admin
         String complexCode = null;
+        String complexName = null;
+        String flatNo = null;
+
         List<HousingComplex> adminComplexes = housingComplexRepository.findByComplexAdminContaining(user.getEmpNo());
         if (!adminComplexes.isEmpty()) {
             complexCode = adminComplexes.get(0).getComplexCode();
+            complexName = adminComplexes.get(0).getName();
+        } else {
+            // If not an admin, try to get from housing allotment
+            List<com.hpcl.colony.entity.HousingAllotment> allotments = housingAllotmentRepository.findByEmpNo(user.getEmpNo());
+            if (!allotments.isEmpty()) {
+                com.hpcl.colony.entity.HousingAllotment allotment = allotments.get(0);
+                complexCode = allotment.getComplexCode();
+                flatNo = allotment.getFlatNo();
+                
+                housingComplexRepository.findById(complexCode).ifPresent(complex -> {
+                    // However, we need a mutable string reference, so we handle it below
+                });
+                
+                // Fetch complex name
+                Optional<HousingComplex> hc = housingComplexRepository.findById(complexCode);
+                if (hc.isPresent()) {
+                    complexName = hc.get().getName();
+                }
+            }
         }
 
         return LoginResponse.builder()
@@ -70,6 +95,8 @@ public class AuthService {
                 .role(primaryRole)
                 .roles(roles)
                 .complexCode(complexCode)
+                .complexName(complexName)
+                .flatNo(flatNo)
                 .vehicleRegistered(false) // TODO: Check COLONY_VEHICLEINFO
                 .redirectUrl(determineRedirectUrl(roles))
                 .build();

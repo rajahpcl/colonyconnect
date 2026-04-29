@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import { listAdminComplaints, updateComplaintStatus } from '../../lib/api/admin';
+import { listAdminComplaints } from '../../lib/api/admin';
 import { apiRequest } from '../../lib/api/client';
 import '../common.css';
 

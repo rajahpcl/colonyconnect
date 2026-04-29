@@ -15,6 +15,8 @@ public class LoginResponse {
     private String role;
     private List<String> roles;
     private String complexCode;
+    private String complexName;
+    private String flatNo;
     private boolean vehicleRegistered;
     private String redirectUrl;
 }

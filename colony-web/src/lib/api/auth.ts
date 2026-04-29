@@ -18,6 +18,8 @@ const TEST_USER: SessionUser = {
   role: 'SYSTEM_ADMIN',
   roles: ['SYSTEM_ADMIN', 'ADMIN', 'COMPLEX_ADMIN', 'RESIDENT'],
   complexCode: 'TEST_COMPLEX',
+  complexName: 'Test Colony',
+  flatNo: 'A-101',
   vehicleRegistered: true,
   redirectUrl: '/app/home',
 };

@@ -321,3 +321,55 @@ textarea.form-control {
     gap: 1rem;
   }
 }
+
+/* Legacy layout mimic styles */
+.user-details-banner {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.user-detail-item .label {
+  color: #555;
+}
+
+.user-detail-item .value {
+  color: #333;
+}
+
+.form-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.form-row .form-group.full-width {
+  flex: 2;
+}
+
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 2rem;
+}
+
+.right-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}

@@ -4,6 +4,8 @@ export type SessionUser = {
   role: string;
   roles: string[];
   complexCode?: string | null;
+  complexName?: string | null;
+  flatNo?: string | null;
   vehicleRegistered: boolean;
   redirectUrl: string;
 };
