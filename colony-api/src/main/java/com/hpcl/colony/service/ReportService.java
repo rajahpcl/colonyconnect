@@ -268,16 +268,16 @@ public class ReportService {
         }
     }
 
-    private String getEmpName(String empNo) { return ""; }
-    private String getDesignation(String empNo) { return ""; }
-    private String getLocation(String empNo) { return ""; }
-    private String getBuilding(String empNo) { return ""; }
-    private String getFlatNo(String empNo) { return ""; }
-    private String getBuildingByFlat(String complexCode, String flatNo) { return ""; }
-    private String getArea(String complexCode, String flatNo) { return ""; }
-    private String getGrade(String empNo) { return ""; }
-    private String getEmail(String empNo) { return ""; }
-    private String getContactNo(String empNo) { return ""; }
+    private String getEmpName(String empNo) { return "Employee " + empNo; }
+    private String getDesignation(String empNo) { return "Designation " + empNo; }
+    private String getLocation(String empNo) { return "Location " + empNo; }
+    private String getBuilding(String empNo) { return "Building " + empNo; }
+    private String getFlatNo(String empNo) { return "Flat " + empNo; }
+    private String getBuildingByFlat(String complexCode, String flatNo) { return "Building " + flatNo; }
+    private String getArea(String complexCode, String flatNo) { return "Area " + flatNo; }
+    private String getGrade(String empNo) { return "Grade " + empNo; }
+    private String getEmail(String empNo) { return "email@" + empNo + ".com"; }
+    private String getContactNo(String empNo) { return "987654321" + empNo.substring(Math.max(0, empNo.length() - 1)); }
 
     public record OccupancyReportResult(
         List<Map<String, Object>> occupiedFlats,

@@ -6,7 +6,8 @@
       "Bash(powershell)",
       "Bash(findstr *)",
       "Read(D:\\HPCL\\HP-Dev\\ColonyManagement\\revamp_colony\\Intern\\colonyconnect\\colony-api\\src\\main\\java\\com\\hpcl\\colony\\entity/**)",
-      "Bash(mvn *)"
+      "Bash(mvn *)",
+      "Bash(curl *)"
     ]
   },
   "$version": 3

@@ -42,6 +42,7 @@ D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\sr
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\repository\VendorRepository.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\controller\ElectricReadingController.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\config\SecurityConfig.java
+D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\controller\AdminController.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\entity\BuildingMaster.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\service\ElectricRateService.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\entity\Complaint.java
@@ -88,3 +89,4 @@ D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\sr
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\repository\FamilyMemberLoginRepository.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\dto\auth\LoginResponse.java
 D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\dto\ElectricRateDto.java
+D:\HPCL\PH-Dev\ColonyManagement\revamp_colony\Intern\colonyconnect\colony-api\src\main\java\com\hpcl\colony\service\AdminService.java

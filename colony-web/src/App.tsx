@@ -20,7 +20,15 @@ import { VehicleListPage } from './pages/vehicles/VehicleListPage';
 import { VehicleFormPage } from './pages/vehicles/VehicleFormPage';
 import { ReadingsPage } from './pages/readings/ReadingsPage';
 import { POListPage } from './pages/po/POListPage';
-import { ReportsPage, DashboardReportPage, AllReportsPage } from './pages/reports';
+import {
+  ReportsPage,
+  DashboardReportPage,
+  AllReportsPage,
+  OccupancyReportPage,
+  VehicleReportPage,
+  MatrixReportPage,
+  PoQtyReportPage,
+} from './pages/reports';
 import { PendingTasksPage, RequestListPage, ProxyRequestPage } from './pages/ifms';
 import {
   AdminDashboardPage,
@@ -305,7 +313,7 @@ function App() {
           <Route
             element={
               <ProtectedRoute allowedRoles={adminRoles}>
-                <PlaceholderPage description="Occupancy Report will be implemented here." eyebrow="Report" title="Occupancy Report" />
+                <OccupancyReportPage />
               </ProtectedRoute>
             }
             path="reports/occupancy"
@@ -313,7 +321,7 @@ function App() {
           <Route
             element={
               <ProtectedRoute allowedRoles={adminRoles}>
-                <PlaceholderPage description="Vehicle Report will be implemented here." eyebrow="Report" title="Vehicle Report" />
+                <VehicleReportPage />
               </ProtectedRoute>
             }
             path="reports/vehicles"
@@ -321,7 +329,7 @@ function App() {
           <Route
             element={
               <ProtectedRoute allowedRoles={adminRoles}>
-                <PlaceholderPage description="Matrix Report PO Items v/s Complaints will be implemented here." eyebrow="Report" title="Matrix Report" />
+                <MatrixReportPage />
               </ProtectedRoute>
             }
             path="reports/matrix-po-complaints"
@@ -329,7 +337,7 @@ function App() {
           <Route
             element={
               <ProtectedRoute allowedRoles={adminRoles}>
-                <PlaceholderPage description="PO Items v/s Total Qty will be implemented here." eyebrow="Report" title="PO Items Qty" />
+                <PoQtyReportPage />
               </ProtectedRoute>
             }
             path="reports/po-qty"
