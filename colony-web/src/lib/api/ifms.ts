@@ -1,51 +1,123 @@
 import { apiRequest, toQueryString } from './client';
 
-export type IFMSTask = {
-  id?: number;
-  requestId: number;
-  assignedTo: string;
-  status: string;
-  dueDate?: string;
-  priority?: string;
+// ── Shared types ────────────────────────────────────────────────────────────
+
+export type Colony = { code: string; name: string };
+export type StatusOption = { id: number; name: string };
+
+/** Mirrors ComplaintDto returned by the backend */
+export type ComplaintRecord = {
+  id: number;
+  empNo: string;
+  flatNo?: string;
+  complexCode?: string;
+  complexName?: string;
+  subcategoryId?: number;
+  subcategoryName?: string;
+  categoryName?: string;
+  compDetails?: string;
+  status?: number;
+  statusName?: string;
+  submitDate?: string;
+  updateDate?: string;
+  vendorName?: string;
+  poTotalAmount?: number;
 };
 
-export type ProxyRequest = {
-  id?: number;
-  requestedBy: string;
-  representBy: string;
-  fromDate: string;
-  toDate: string;
-  status: string;
-};
+// ── Dropdown helpers ─────────────────────────────────────────────────────────
 
-export async function listMyPendingTasks() {
-  return apiRequest<IFMSTask[]>('/api/v1/ifms/pending');
+/** All colonies (housing_complex_list) ordered by name — for multi-selects */
+export async function listColonies(): Promise<Colony[]> {
+  return apiRequest<Colony[]>('/api/v1/ifms/colonies');
 }
 
-export async function listAllTasks(params?: Record<string, any>) {
-  return apiRequest<IFMSTask[]>(`/api/v1/ifms/tasks${toQueryString(params ?? {})}`);
+/** All status options (colony_status) — for Request List status multi-select */
+export async function listStatuses(): Promise<StatusOption[]> {
+  return apiRequest<StatusOption[]>('/api/v1/ifms/statuses');
 }
 
-export async function getTask(id: number) {
-  return apiRequest<IFMSTask>(`/api/v1/ifms/tasks/${id}`);
+/** Colonies that have at least one allotment entry — for Proxy Request */
+export async function listAllotmentComplexes(): Promise<Colony[]> {
+  return apiRequest<Colony[]>('/api/v1/housing/allotment-complexes');
 }
 
-export async function updateTaskStatus(id: number, status: string) {
-  return apiRequest<IFMSTask>(
-    `/api/v1/ifms/tasks/${id}/status`,
-    { body: JSON.stringify({ status }), method: 'PATCH' },
-    { withCsrf: true }
+/** Flat numbers for a complex (housing_alloted) */
+export async function listFlatsByComplex(complexCode: string): Promise<string[]> {
+  return apiRequest<string[]>(`/api/v1/housing/flats?complexCode=${encodeURIComponent(complexCode)}`);
+}
+
+/** Employee number for a specific flat */
+export async function getEmployeeByFlat(complexCode: string, flatNo: string): Promise<string> {
+  const result = await apiRequest<{ empNo: string }>(
+    `/api/v1/housing/employee?complexCode=${encodeURIComponent(complexCode)}&flatNo=${encodeURIComponent(flatNo)}`
   );
+  return result?.empNo ?? '';
 }
 
-export async function createProxyRequest(data: ProxyRequest) {
-  return apiRequest<ProxyRequest>(
+// ── My Pending Tasks (bvg_pending.jsp) ──────────────────────────────────────
+
+/**
+ * Returns requests with STATUS = 20 (Submitted) filtered by selected complexes.
+ * If no complexes are supplied, returns an empty list (matches legacy validation).
+ */
+export async function listMyPendingTasks(complexCodes?: string[]): Promise<ComplaintRecord[]> {
+  if (!complexCodes || complexCodes.length === 0) return [];
+  const params = complexCodes.map((c) => `complexCodes=${encodeURIComponent(c)}`).join('&');
+  return apiRequest<ComplaintRecord[]>(`/api/v1/ifms/pending?${params}`);
+}
+
+// ── Request List (bvgAckByMe.jsp) ───────────────────────────────────────────
+
+export type RequestListParams = {
+  complexCodes?: string[];
+  statuses?: number[];
+  fromDate?: string;
+  toDate?: string;
+};
+
+/**
+ * Returns requests filtered by complex, status, and optional date range.
+ * Returns empty list when required dropdowns (colony + status) are not selected.
+ */
+export async function listRequests(params: RequestListParams): Promise<ComplaintRecord[]> {
+  const { complexCodes = [], statuses = [], fromDate, toDate } = params;
+  if (complexCodes.length === 0 || statuses.length === 0) return [];
+
+  const parts: string[] = [];
+  complexCodes.forEach((c) => parts.push(`complexCodes=${encodeURIComponent(c)}`));
+  statuses.forEach((s) => parts.push(`statuses=${s}`));
+  if (fromDate) parts.push(`fromDate=${encodeURIComponent(fromDate)}`);
+  if (toDate) parts.push(`toDate=${encodeURIComponent(toDate)}`);
+
+  return apiRequest<ComplaintRecord[]>(`/api/v1/ifms/requests?${parts.join('&')}`);
+}
+
+// ── Raise Proxy Request (proxy_request.jsp) ──────────────────────────────────
+
+export type ProxyRequestPayload = {
+  empNo: string;       // target employee number
+  raiserEmpNo?: string;
+};
+
+export async function raiseProxyRequest(payload: ProxyRequestPayload) {
+  return apiRequest<ComplaintRecord>(
     '/api/v1/ifms/proxy',
-    { body: JSON.stringify(data), method: 'POST' },
+    { method: 'POST', body: JSON.stringify(payload) },
     { withCsrf: true }
   );
 }
 
+// ── Legacy stubs (kept for backward-compat) ──────────────────────────────────
+
+export async function updateTaskStatus(_id: number, _status: string) {
+  return Promise.resolve(undefined);
+}
+export async function listAllTasks(_params?: Record<string, unknown>) {
+  return [] as ComplaintRecord[];
+}
+export async function createProxyRequest(_data: unknown) {
+  return Promise.resolve(undefined);
+}
 export async function listProxyRequests() {
-  return apiRequest<ProxyRequest[]>('/api/v1/ifms/proxy');
+  return [] as ComplaintRecord[];
 }

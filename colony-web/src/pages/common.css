@@ -19,3 +19,279 @@
 .error { color: #e74c3c; margin: 1rem 0; }
 .success { color: #27ae60; margin: 1rem 0; }
 .table-responsive { overflow-x: auto; }
+
+/* ── IFMS Pages ──────────────────────────────────────────────────────────── */
+.ifms-page-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+
+/* Filter panel wrapper */
+.ifms-filter-panel {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem 1.25rem 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Horizontal filter row */
+.ifms-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Individual filter group */
+.ifms-filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ifms-date-group {
+  min-width: 160px;
+}
+
+.ifms-colony-group {
+  flex: 2;
+  min-width: 200px;
+}
+
+.ifms-status-group {
+  flex: 1;
+  min-width: 180px;
+}
+
+.ifms-filter-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+/* Multi-select listbox — matching legacy look */
+.ifms-multiselect {
+  border: 1px solid #b3b3b3;
+  border-radius: 3px;
+  padding: 0.15rem;
+  font-size: 0.88rem;
+  background: #fff;
+  color: #222;
+  min-height: 90px;
+  width: 100%;
+  outline: none;
+}
+
+.ifms-multiselect:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 2px rgba(0,102,204,0.15);
+}
+
+.ifms-date-input {
+  border: 1px solid #b3b3b3;
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+  width: 100%;
+}
+
+/* Search button */
+.ifms-filter-action {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0.1rem;
+}
+
+.ifms-search-btn {
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.ifms-search-btn:hover {
+  background: #0052a3;
+}
+
+/* Validation / success messages */
+.ifms-validation-error {
+  color: #c0392b;
+  font-size: 0.88rem;
+  margin-top: 0.5rem;
+}
+
+.ifms-success-msg {
+  color: #27ae60;
+  font-size: 0.88rem;
+  margin-top: 0.5rem;
+}
+
+/* Data table */
+.ifms-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.ifms-table thead tr {
+  background: #d0d9e8;
+}
+
+.ifms-table th {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #bbb;
+  white-space: nowrap;
+}
+
+.ifms-table td {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.ifms-table tbody tr:nth-child(even) {
+  background: #f5f8ff;
+}
+
+.ifms-table tbody tr:hover {
+  background: #e8f0fb;
+}
+
+/* Action link (blue, like legacy) */
+.ifms-action-link {
+  color: #0044aa;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.ifms-action-link:hover {
+  color: #002277;
+}
+
+/* Voucher icon button */
+.ifms-voucher-btn {
+  background: #17a2b8;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.ifms-voucher-btn:hover {
+  background: #0f6674;
+}
+
+/* ── Proxy Request Card ───────────────────────────────────────────────────── */
+.ifms-proxy-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.ifms-proxy-card-header {
+  background: #e8eef5;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.ifms-proxy-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1a1a2e;
+}
+
+.ifms-proxy-card-body {
+  padding: 1.5rem 1.25rem;
+}
+
+/* Proxy form row */
+.ifms-proxy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.ifms-proxy-label {
+  font-size: 0.9rem;
+  color: #333;
+  white-space: nowrap;
+}
+
+.ifms-proxy-select {
+  border: 1px solid #b3b3b3;
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+  min-width: 180px;
+}
+
+.ifms-proxy-flat {
+  min-width: 100px;
+}
+
+.ifms-proxy-emp-readonly {
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+  width: 130px;
+  background: #d4d4d4;
+  color: #444;
+}
+
+.ifms-proxy-emp-manual {
+  border: 1px solid #b3b3b3;
+  border-radius: 3px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+  width: 160px;
+}
+
+/* OR divider */
+.ifms-proxy-or {
+  text-align: center;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Raise Request button — green like legacy */
+.ifms-raise-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.55rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ifms-raise-btn:hover {
+  background: #1e7e34;
+}
+
+.ifms-raise-btn:disabled {
+  background: #94d3a2;
+  cursor: not-allowed;
+}
+

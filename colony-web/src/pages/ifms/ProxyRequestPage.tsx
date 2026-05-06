@@ -1,95 +1,218 @@
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { createProxyRequest, listProxyRequests } from '../../lib/api/ifms';
+import {
+  listAllotmentComplexes,
+  listFlatsByComplex,
+  getEmployeeByFlat,
+  raiseProxyRequest,
+  type Colony,
+} from '../../lib/api/ifms';
 import '../common.css';
 
-type ProxyForm = {
-  representBy: string;
-  fromDate: string;
-  toDate: string;
-};
-
+/**
+ * Raise Proxy Request — mirrors proxy_request.jsp
+ *
+ * The form has two ways to identify the employee:
+ *  1. Cascading dropdown: Select Complex → Select Flat → Employee (auto-filled, read-only)
+ *  2. OR: Enter Employee No manually
+ *
+ * Validation: exactly one path must yield a non-empty employee number.
+ * On submit, calls POST /api/v1/ifms/proxy with { empNo }.
+ */
 export function ProxyRequestPage() {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ProxyForm>();
-  const { data: requests = [], refetch } = useQuery({
-    queryKey: ['proxy-requests'],
-    queryFn: () => listProxyRequests(),
+  // ── Path 1: complex → flat → emp (auto) ──────────────────────────────────
+  const [selectedComplex, setSelectedComplex] = useState('');
+  const [selectedFlat, setSelectedFlat] = useState('');
+  const [autoEmpNo, setAutoEmpNo] = useState('');
+  const [flats, setFlats] = useState<string[]>([]);
+  const [flatsLoading, setFlatsLoading] = useState(false);
+
+  // ── Path 2: manual employee number ───────────────────────────────────────
+  const [manualEmpNo, setManualEmpNo] = useState('');
+
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // Load complexes that have allotment data
+  const { data: complexes = [], isLoading: complexesLoading } = useQuery<Colony[]>({
+    queryKey: ['allotment-complexes'],
+    queryFn: listAllotmentComplexes,
   });
 
+  // When complex changes, reload flats
+  useEffect(() => {
+    if (!selectedComplex) {
+      setFlats([]);
+      setSelectedFlat('');
+      setAutoEmpNo('');
+      return;
+    }
+    setFlatsLoading(true);
+    setSelectedFlat('');
+    setAutoEmpNo('');
+    listFlatsByComplex(selectedComplex)
+      .then((f) => setFlats(f))
+      .catch(() => setFlats([]))
+      .finally(() => setFlatsLoading(false));
+  }, [selectedComplex]);
+
+  // When flat changes, auto-fill employee number
+  useEffect(() => {
+    if (!selectedComplex || !selectedFlat) {
+      setAutoEmpNo('');
+      return;
+    }
+    getEmployeeByFlat(selectedComplex, selectedFlat)
+      .then((e) => setAutoEmpNo(e))
+      .catch(() => setAutoEmpNo(''));
+  }, [selectedComplex, selectedFlat]);
+
   const { mutate: submit, isPending } = useMutation({
-    mutationFn: (data: ProxyForm) =>
-      createProxyRequest({ ...data, requestedBy: '', status: 'pending' }),
+    mutationFn: (empNo: string) => raiseProxyRequest({ empNo }),
     onSuccess: () => {
-      reset();
-      refetch();
+      setSuccessMsg('Proxy request raised successfully!');
+      setErrorMsg('');
+      setSelectedComplex('');
+      setSelectedFlat('');
+      setAutoEmpNo('');
+      setManualEmpNo('');
+      setFlats([]);
+    },
+    onError: (err: Error) => {
+      setErrorMsg(err.message ?? 'Failed to raise proxy request.');
+      setSuccessMsg('');
     },
   });
 
+  const handleSubmit = () => {
+    setSuccessMsg('');
+    setErrorMsg('');
+
+    // Determine which emp no to use
+    const targetEmpNo = manualEmpNo.trim() || autoEmpNo.trim();
+
+    if (!targetEmpNo) {
+      if (!autoEmpNo.trim()) {
+        setErrorMsg(
+          'Please Select Proper Complex Code and Flat No for employee no to be automatically generated, OR enter Employee No manually.'
+        );
+      } else {
+        setErrorMsg('Please Enter Employee No or select a Complex and Flat.');
+      }
+      return;
+    }
+
+    submit(targetEmpNo);
+  };
+
   return (
-    <div className="container">
-      <h1>Raise Proxy Request</h1>
+    <div className="ifms-page-container">
+      {/* Card wrapper matching legacy layout */}
+      <div className="ifms-proxy-card">
+        <div className="ifms-proxy-card-header">
+          <h3>Raise Proxy Request</h3>
+        </div>
+        <div className="ifms-proxy-card-body">
+          {/* ── Row 1: Complex → Flat → Employee (auto) ── */}
+          <div className="ifms-proxy-row">
+            <label className="ifms-proxy-label">Select Complex :</label>
+            <select
+              id="complex"
+              className="ifms-proxy-select"
+              value={selectedComplex}
+              onChange={(e) => {
+                setSelectedComplex(e.target.value);
+                setManualEmpNo(''); // clear manual if they pick dropdown path
+              }}
+            >
+              <option value="">Select Complex</option>
+              {complexesLoading ? (
+                <option disabled>Loading…</option>
+              ) : (
+                complexes.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
+                  </option>
+                ))
+              )}
+            </select>
 
-      <div style={{ background: '#fff', padding: '2rem', marginBottom: '2rem', borderRadius: '4px' }}>
-        <h3>New Proxy Request</h3>
-        <form onSubmit={handleSubmit((data) => submit(data))}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Represent By (Employee Name)</label>
-            <input
-              {...register('representBy', { required: true })}
-              className="form-control"
-            />
-            {errors.representBy && <span className="error">Required</span>}
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>From Date</label>
-            <input
-              type="date"
-              {...register('fromDate', { required: true })}
-              className="form-control"
-            />
-            {errors.fromDate && <span className="error">Required</span>}
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>To Date</label>
-            <input
-              type="date"
-              {...register('toDate', { required: true })}
-              className="form-control"
-            />
-            {errors.toDate && <span className="error">Required</span>}
-          </div>
-          <button type="submit" disabled={isPending} className="btn btn-primary">
-            {isPending ? 'Submitting...' : 'Submit'}
-          </button>
-        </form>
-      </div>
+            <label className="ifms-proxy-label" style={{ marginLeft: '1rem' }}>
+              Select Flat:
+            </label>
+            <select
+              id="flat"
+              className="ifms-proxy-select ifms-proxy-flat"
+              value={selectedFlat}
+              onChange={(e) => setSelectedFlat(e.target.value)}
+              disabled={!selectedComplex || flatsLoading}
+            >
+              <option value="">Select Flat</option>
+              {flatsLoading ? (
+                <option disabled>Loading…</option>
+              ) : (
+                flats.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))
+              )}
+            </select>
 
-      <h3>My Proxy Requests</h3>
-      <div className="table-responsive">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Represent By</th>
-              <th>From Date</th>
-              <th>To Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((req: any) => (
-              <tr key={req.id}>
-                <td>{req.representBy}</td>
-                <td>{new Date(req.fromDate).toLocaleDateString()}</td>
-                <td>{new Date(req.toDate).toLocaleDateString()}</td>
-                <td>
-                  <span className={`status-badge status-${req.status?.toLowerCase()}`}>
-                    {req.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <label className="ifms-proxy-label" style={{ marginLeft: '1rem' }}>
+              Employee :
+            </label>
+            <input
+              id="top_emp_no1"
+              type="text"
+              className="ifms-proxy-emp-readonly"
+              value={autoEmpNo}
+              readOnly
+              placeholder="(auto-filled)"
+            />
+          </div>
+
+          {/* ── OR divider ── */}
+          <div className="ifms-proxy-or">
+            <strong>OR</strong>
+          </div>
+
+          {/* ── Row 2: Manual emp no ── */}
+          <div className="ifms-proxy-row">
+            <label className="ifms-proxy-label">Enter Employee No :</label>
+            <input
+              id="top_emp_no"
+              type="text"
+              className="ifms-proxy-emp-manual"
+              value={manualEmpNo}
+              onChange={(e) => {
+                setManualEmpNo(e.target.value);
+                // If they type manually, clear the dropdown path
+                if (e.target.value.trim()) {
+                  setSelectedComplex('');
+                  setSelectedFlat('');
+                  setAutoEmpNo('');
+                }
+              }}
+              placeholder="e.g. 12345678"
+            />
+          </div>
+
+          {/* ── Messages ── */}
+          {errorMsg && <p className="ifms-validation-error">{errorMsg}</p>}
+          {successMsg && <p className="ifms-success-msg">{successMsg}</p>}
+
+          {/* ── Submit ── */}
+          <div className="ifms-proxy-row" style={{ justifyContent: 'center', marginTop: '1.5rem' }}>
+            <button
+              className="ifms-raise-btn"
+              onClick={handleSubmit}
+              disabled={isPending}
+            >
+              {isPending ? 'Raising…' : 'Raise Request'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
