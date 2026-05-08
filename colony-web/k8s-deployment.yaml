@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: colony-web-deployment
+  namespace: ingress-nginx
+  labels:
+    app: node
+    name: colony-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: colony-web
+      app: node
+  template:
+    metadata:
+      labels:
+        name: colony-web
+        app: node
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        runAsNonRoot: true
+      containers:
+      - name: colony-web
+        image: a.b.c.d:5000/colony-web:latest
+        imagePullPolicy: Always
+        securityContext:
+         allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - name: tz-config
+            mountPath: /etc/localtime
+          - name: log-volume
+            mountPath: /opt/logs/
+            subPathExpr: $(POD_NAME)
+        env: 
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+               apiVersion: v1
+               fieldPath: metadata.name
+      volumes: 
+        - name: tz-config
+          hostPath: 
+              path: /usr/share/zoneinfo/Asia/Calcutta
+        - name: log-volume
+          hostPath: 
+              path: /mnt/logs2/colony-web
+              type: DirectoryOrCreate
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: colony-web-service
+  namespace: ingress-nginx
+spec:
+  selector:
+    name: colony-web
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: colony-web-ingress
+  namespace: ingress-nginx
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: kube-nginx
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "colony-web"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/proxy-body-size: 30m
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+spec:
+  rules:
+  - host: "x.y.z.w"
+    http:
+      paths:
+        - path: /colony-web
+          pathType: Prefix
+          backend:
+           service:
+            name: colony-web-service
+            port:
+              number: 80

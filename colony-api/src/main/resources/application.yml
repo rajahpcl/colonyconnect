@@ -1,6 +1,8 @@
 spring:
   application:
     name: colony-api
+  jmx:
+    enabled: true
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/colonyconnect}
@@ -37,6 +39,21 @@ logging:
   level:
     com.hpcl.colony: INFO
     org.springframework.security: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# JMX Remote settings
+java:
+  rmi:
+    server:
+      hostname: 127.0.0.1
 
 # External integrations (to be configured)
 app:

@@ -99,6 +99,7 @@ com\hpcl\colony\entity\Complaint.class
 com\hpcl\colony\entity\VehicleInfo.class
 com\hpcl\colony\entity\HousingAllotmentId.class
 com\hpcl\colony\controller\ComplaintController.class
+com\hpcl\colony\controller\IfmsController.class
 com\hpcl\colony\entity\User.class
 com\hpcl\colony\repository\BuildingMasterRepository.class
 com\hpcl\colony\repository\ComplaintSubcategoryRepository.class

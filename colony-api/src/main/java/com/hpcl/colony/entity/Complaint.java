@@ -30,7 +30,7 @@ public class Complaint {
     @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
 
-    @Column(name = "UPDATED_BY")
+    @Transient
     private String updatedBy;
 
     @Column(name = "COMPLEX_CODE")
@@ -55,25 +55,25 @@ public class Complaint {
     private String uploadFile1;
 
     // Additional fields mapped from old JSP but not critical for creation
-    @Column(name = "PO")
+    @Transient
     private String po;
 
-    @Column(name = "PO_NAME")
+    @Transient
     private String poName;
 
-    @Column(name = "GL_CODE")
+    @Transient
     private String glCode;
 
-    @Column(name = "PO_RATE")
+    @Transient
     private String poRate;
 
-    @Column(name = "QUANTITY")
+    @Transient
     private String quantity;
 
-    @Column(name = "TOTAL")
+    @Transient
     private String total;
 
-    @Column(name = "FEEDBACK")
+    @Transient
     private String feedback;
 
     @PrePersist
