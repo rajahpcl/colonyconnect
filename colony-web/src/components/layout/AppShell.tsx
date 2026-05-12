@@ -140,11 +140,11 @@ export function AppShell() {
         <div className="colony-header__inner">
           {/* Left: Large HPCL Logo */}
           <div className="colony-header__logo-area" id="big_logo">
-            <img
-              src="/new_logo_light.svg"
-              alt="HPCL - Hindustan Petroleum Corporation Limited"
-              className="colony-header__logo-svg"
-            />
+              <img
+                src={`${import.meta.env.BASE_URL}new_logo_light.svg`}
+                alt="HPCL - Hindustan Petroleum Corporation Limited"
+                className="colony-header__logo-svg"
+              />
           </div>
 
           {/* Right: Title row + Nav bar */}
@@ -152,7 +152,7 @@ export function AppShell() {
             {/* Top row: App title + user info */}
             <div className="colony-header__title-row">
               <div className="colony-header__small-logo" id="small_logo">
-                <img src="/hp.png" alt="HPCL" className="colony-header__hp-img" />
+                <img src={`${import.meta.env.BASE_URL}hp.png`} alt="HPCL" className="colony-header__hp-img" />
               </div>
               <h3 className="colony-header__app-title">Colony Maintenance</h3>
               <div className="colony-header__user-info">
@@ -182,7 +182,7 @@ export function AppShell() {
 
               {/* Avatar + name in nav */}
               <div className="colony-navbar__avatar">
-                <img src="/user.png" alt="" className="colony-navbar__avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = '/hpcl_logo.png'; }} />
+                <img src={`${import.meta.env.BASE_URL}user.png`} alt="" className="colony-navbar__avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hpcl_logo.png`; }} />
                 <span className="colony-navbar__avatar-name">{user.name}</span>
               </div>
 

@@ -47,7 +47,7 @@ export function LoginPage() {
         <div className="modern-login-image-side">
           <div className="modern-login-overlay">
             <div className="modern-login-branding">
-              <img src="/hp.png" alt="HPCL Logo" className="modern-login-brand-logo" />
+              <img src={`${import.meta.env.BASE_URL}hp.png`} alt="HPCL Logo" className="modern-login-brand-logo" />
               <h1 className="modern-login-brand-title">Colony Management System</h1>
               <p className="modern-login-brand-subtitle">Streamlined operations and maintenance for Hindustan Petroleum Corporation Limited colonies.</p>
             </div>
@@ -58,7 +58,7 @@ export function LoginPage() {
         <div className="modern-login-form-side">
           <div className="modern-login-form-container">
             <div className="modern-login-header">
-              <img src="/hpcl_logo.png" alt="HPCL" className="modern-login-mobile-logo" />
+              <img src={`${import.meta.env.BASE_URL}hpcl_logo.png`} alt="HPCL" className="modern-login-mobile-logo" />
               <h2>Welcome Back</h2>
               <p>Please enter your credentials to access the portal.</p>
             </div>

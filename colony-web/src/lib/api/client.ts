@@ -1,5 +1,7 @@
 import { useAuthStore } from '../auth/authStore';
 
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash if present
+
 type ApiRequestOptions = {
   withCsrf?: boolean;
 };
@@ -14,7 +16,7 @@ export async function ensureCsrfToken() {
     return existingToken;
   }
 
-  const response = await fetch('/api/v1/auth/csrf', {
+  const response = await fetch(`${BASE_PATH}/api/v1/auth/csrf`, {
     credentials: 'include',
   });
 
@@ -44,7 +46,8 @@ export async function apiRequest<T>(
     headers.set('X-XSRF-TOKEN', csrfToken);
   }
 
-  const response = await fetch(path, {
+  const fullPath = path.startsWith(BASE_PATH) ? path : `${BASE_PATH}${path}`;
+  const response = await fetch(fullPath, {
     ...init,
     credentials: 'include',
     headers,
