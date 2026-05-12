@@ -3,16 +3,25 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files
+COPY package.json ./
 
-RUN npm install
+# Install dependencies
+RUN npm config set strict-ssl false && npm install
 
+# Copy source code
 COPY . .
 
+# Build the application
 RUN npm run build
 
-# Stage 2 - Serve with nginx
-FROM nginx:stable-alpine
+# Stage 2 - Serve with a simple Node server (no nginx)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install 'serve' package globally to avoid downloading it at runtime
+RUN npm config set strict-ssl false && npm install -g serve
 
 # Create non-root user/group 1001
 RUN addgroup -g 1001 appgroup && \
@@ -20,29 +29,30 @@ RUN addgroup -g 1001 appgroup && \
 
 # Create log directory and set permissions
 RUN mkdir -p /opt/logs && \
-    chown -R 1001:1001 /opt/logs
+    chown -R 1001:1001 /opt/logs && \
+    chmod 755 /opt/logs
 
-# Remove default nginx html
-RUN rm -rf /usr/share/nginx/html/*
+# Set up serving directory
+# We create a structure where the app lives under the subpath /colonyconnect
+RUN mkdir -p /app/public/colonyconnect
 
-# Copy build files from Vite (dist folder)
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy build files from builder stage into the subpath folder
+COPY --from=builder /app/dist /app/public/colonyconnect
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create a root-level index.html for SPA fallback to work correctly with 'serve -s'
+RUN cp /app/public/colonyconnect/index.html /app/public/index.html
 
-# Set permissions for nginx folders
-RUN chown -R 1001:1001 /usr/share/nginx/html && \
-    chown -R 1001:1001 /var/cache/nginx && \
-    chown -R 1001:1001 /var/run && \
-    chown -R 1001:1001 /etc/nginx/conf.d
+# Set permissions for all app folders to 1001
+RUN chown -R 1001:1001 /app && \
+    chmod -R 755 /app
 
-# Create nginx pid location
-RUN touch /var/run/nginx.pid && \
-    chown -R 1001:1001 /var/run/nginx.pid
-
+# Switch to non-root user
 USER 1001
 
+# Expose the port (matches k8s targetPort)
 EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start serving the application
+# -s flag enables SPA routing (falls back to index.html)
+# -l 8080 specifies the port
+CMD ["serve", "-s", "public", "-l", "8080"]

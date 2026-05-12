@@ -25,14 +25,19 @@ The Dockerfile uses a multi-stage build:
     - Copies the `dist` folder to `/usr/share/nginx/html`.
     - Sets `USER 1001`.
 
+### 2.3. Docker Ignore (`.dockerignore`)
+A `.dockerignore` file is included to prevent local files like `node_modules` and `dist` from being copied into the build context. This is critical to avoid platform mismatch errors (e.g., Windows binaries being used in a Linux container).
+
 ## 3. Build and Push Instructions
 
 Run these commands from the project root:
 
 ```bash
 # 1. Build the Docker image
+# Note: The build process inside Docker handles downloading the correct 
+# Linux-specific native bindings for dependencies like Vite/Rolldown.
 docker build -t a.b.c.d:5000/colony-web:latest .
-
+```
 # 2. Push the image to the registry
 docker push a.b.c.d:5000/colony-web:latest
 ```
@@ -83,8 +88,32 @@ kubectl apply -f k8s-deployment.yaml
    kubectl get svc,ing -n ingress-nginx
    ```
 
-## 7. Minute Technical Details
-- **User 1001:** The Dockerfile explicitly creates this user and gives it ownership of all directories Nginx needs to write to (logs, cache, pid).
-- **Vite Build:** Ensure `npm run build` is successful locally before building the Docker image. The Dockerfile performs this build internally.
-- **Port 8080:** Internal container port is 8080. The Service maps the external port 80 to this 8080.
-- **Log Persistence:** Logs written by Nginx inside the container to `/opt/logs` are persisted on the Kubernetes node at `/mnt/logs2/colony-web`.
+## 8. Locating and Handover of the Image
+
+There are two primary ways to provide the image to the admin team:
+
+### Option A: Via Registry (Recommended)
+If your environment has a central Docker registry (like the one mentioned in the tags: `a.b.c.d:5000`), the image is "located" there once you push it.
+
+1.  **Push the image:**
+    ```bash
+    docker push a.b.c.d:5000/colony-web:latest
+    ```
+2.  **Notify Admin:** Tell the admin team the image name: `a.b.c.d:5000/colony-web:latest`. They can pull it directly from the registry onto the production servers.
+
+### Option B: Via Offline File (Tarball)
+If you need to send a physical file (e.g., via email, shared drive, or USB):
+
+1.  **Locate the image ID:**
+    ```bash
+    docker images | grep colony-web
+    ```
+2.  **Export the image to a file:**
+    ```bash
+    docker save -o colony-web-image.tar a.b.c.d:5000/colony-web:latest
+    ```
+3.  **Handover:** Give the `colony-web-image.tar` file to the admin team.
+4.  **Admin Import:** The admin team will load it using:
+    ```bash
+    docker load -i colony-web-image.tar
+    ```
