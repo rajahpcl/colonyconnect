@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "COLONY_ACTION_HISTORY", schema = "colonyconnect")
+@Table(name = "COLONY_ACTION_HISTORY", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

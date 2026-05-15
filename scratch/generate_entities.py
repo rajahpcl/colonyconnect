@@ -11,7 +11,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_VEHICLEINFO", schema = "colonyconnect")
+@Table(name = "COLONY_VEHICLEINFO", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,7 +53,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_ELECTRIC_RATE", schema = "colonyconnect")
+@Table(name = "COLONY_ELECTRIC_RATE", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -98,7 +98,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_ELECTRIC_READING", schema = "colonyconnect")
+@Table(name = "COLONY_ELECTRIC_READING", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -143,7 +143,7 @@ import lombok.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "COLONY_BUILDING_MSTR", schema = "colonyconnect")
+@Table(name = "COLONY_BUILDING_MSTR", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -189,7 +189,7 @@ import lombok.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "HOUSING_MASTER", schema = "colonyconnect")
+@Table(name = "HOUSING_MASTER", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -246,7 +246,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_INVENTORY_MAIN", schema = "colonyconnect")
+@Table(name = "COLONY_INVENTORY_MAIN", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -293,7 +293,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "COLONY_INVENTORY_ENTRY", schema = "colonyconnect")
+@Table(name = "COLONY_INVENTORY_ENTRY", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -325,7 +325,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "COLONY_INVENTORY_HISTORY", schema = "colonyconnect")
+@Table(name = "COLONY_INVENTORY_HISTORY", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -358,7 +358,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_PO_SUBMITTED", schema = "colonyconnect")
+@Table(name = "COLONY_PO_SUBMITTED", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -408,7 +408,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "COLONY_ACTION_HISTORY", schema = "colonyconnect")
+@Table(name = "COLONY_ACTION_HISTORY", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -455,7 +455,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_FAMILY_MEMBER_LOGIN", schema = "colonyconnect")
+@Table(name = "COLONY_FAMILY_MEMBER_LOGIN", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

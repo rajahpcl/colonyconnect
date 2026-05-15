@@ -5,13 +5,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_REQUEST", schema = "COLONYCONNECT")
+@Table(name = "COLONY_REQUEST", schema = "orainfo")
 @Data
 public class Complaint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "request_seq")
-    @SequenceGenerator(name = "request_seq", sequenceName = "COLONYCONNECT.REQUEST_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "request_seq", sequenceName = "REQUEST_SEQ", allocationSize = 1)
     @Column(name = "ID")
     private Long id;
 

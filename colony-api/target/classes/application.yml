@@ -1,15 +1,15 @@
 spring:
   application:
-    name: colony-api
+    name: colonyconnect
   jmx:
     enabled: true
 
+  # Database Configuration (Auto-detects Postgres/Oracle based on URL)
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/colonyconnect}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:Hpcl@123}
-    driver-class-name: org.postgresql.Driver
-  
+    url: ${DB_URL:jdbc:oracle:thin:@//oradevdb.hpcl.co.in:1551/oradevdb}
+    username: ${DB_USERNAME:orainfo}
+    password: ${DB_PASSWORD:information1}
+
   sap:
     datasource:
       url: ${SAP_URL:jdbc:sqlserver://sapindb-ag-lsnr.jade.hpcl.in:16080;databaseName=ERPINTDB}
@@ -24,7 +24,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         
 

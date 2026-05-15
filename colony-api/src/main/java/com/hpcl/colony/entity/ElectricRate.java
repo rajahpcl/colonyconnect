@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "COLONY_ELECTRIC_RATE", schema = "colonyconnect")
+@Table(name = "COLONY_ELECTRIC_RATE", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

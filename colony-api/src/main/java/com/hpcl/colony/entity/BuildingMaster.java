@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "COLONY_BUILDING_MSTR", schema = "colonyconnect")
+@Table(name = "COLONY_BUILDING_MSTR", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

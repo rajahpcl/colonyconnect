@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "COLONY_INVENTORY_MASTER", schema = "colonyconnect")
+@Table(name = "COLONY_INVENTORY_MASTER", schema = "orainfo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
