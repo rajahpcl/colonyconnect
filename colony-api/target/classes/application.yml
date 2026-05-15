@@ -34,7 +34,7 @@ spring:
 server:
   port: 8080
   servlet:
-    context-path: /colonyconnect
+    context-path: /colonyconnectapi
 
 logging:
   level:
@@ -79,3 +79,8 @@ app:
     path: ${STORAGE_PATH:/data/attachments}
   security:
     pin: ${SECURITY_LOGIN_PIN:}
+  jwt:
+    secret: ${JWT_SECRET:ColonyConnectSecretKeyForJWTTokenGeneration2026!@#$%^&*()}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:8080,https://webtestkube.hpcl.co.in,https://colonyconnect.hpcl.co.in}

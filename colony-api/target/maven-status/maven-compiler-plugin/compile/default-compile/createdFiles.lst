@@ -17,7 +17,6 @@ com\hpcl\colony\entity\Vendor$VendorBuilder.class
 com\hpcl\colony\entity\InventoryHistory$InventoryHistoryBuilder.class
 com\hpcl\colony\entity\InventoryMaster.class
 com\hpcl\colony\entity\ElectricRate.class
-com\hpcl\colony\config\SecurityConfig$SessionAuthenticationFilter.class
 com\hpcl\colony\entity\FamilyMemberLogin.class
 com\hpcl\colony\entity\HousingMaster.class
 com\hpcl\colony\repository\InventoryEntryRepository.class
@@ -33,6 +32,7 @@ com\hpcl\colony\controller\VehicleController.class
 com\hpcl\colony\service\ElectricReadingService.class
 com\hpcl\colony\exception\ResourceNotFoundException.class
 com\hpcl\colony\service\ComplaintService.class
+com\hpcl\colony\config\JwtUtil.class
 com\hpcl\colony\entity\HousingComplex.class
 com\hpcl\colony\controller\ElectricReadingController.class
 com\hpcl\colony\controller\MasterDataController.class
@@ -64,7 +64,6 @@ com\hpcl\colony\controller\BuildingMasterController.class
 com\hpcl\colony\service\BuildingMasterService.class
 com\hpcl\colony\entity\ComplaintSubcategory.class
 com\hpcl\colony\repository\ActionHistoryRepository.class
-com\hpcl\colony\config\SecurityConfig$CsrfCookieFilter.class
 com\hpcl\colony\entity\FamilyMemberLogin$FamilyMemberLoginBuilder.class
 com\hpcl\colony\entity\VendorMapping$VendorMappingBuilder.class
 com\hpcl\colony\repository\PoSubmittedRepository.class
@@ -116,6 +115,7 @@ com\hpcl\colony\dto\InventoryDto.class
 com\hpcl\colony\service\MasterDataService.class
 com\hpcl\colony\repository\InventoryHistoryRepository.class
 com\hpcl\colony\entity\ComplaintSubcategory$ComplaintSubcategoryBuilder.class
+com\hpcl\colony\config\SecurityConfig$JwtAuthenticationFilter.class
 com\hpcl\colony\controller\VendorController.class
 com\hpcl\colony\entity\IfmsMember$IfmsMemberBuilder.class
 com\hpcl\colony\repository\ElectricRateRepository.class

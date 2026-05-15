@@ -7,14 +7,12 @@ import { useAuthStore } from '../lib/auth/authStore';
 export function SecurityLoginPage() {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
-  const setCsrfToken = useAuthStore((state) => state.setCsrfToken);
   const [pin, setPin] = useState('');
 
   const securityLoginMutation = useMutation({
     mutationFn: securityLogin,
     onSuccess: (user) => {
       setUser(user);
-      setCsrfToken(null);
       navigate(user.redirectUrl || '/app/security/home', { replace: true });
     },
   });

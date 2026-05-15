@@ -47,8 +47,7 @@ export async function login(request: LoginRequest): Promise<SessionUser> {
       {
         body: JSON.stringify(request),
         method: 'POST',
-      },
-      { withCsrf: false }
+      }
     );
   } catch (error) {
     const isProxyError = error instanceof Error && (error.message.includes('502') || error.message.includes('503') || error.message.includes('504'));
@@ -73,8 +72,7 @@ export async function securityLogin(pin: string) {
       {
         body: JSON.stringify({ pin }),
         method: 'POST',
-      },
-      { withCsrf: false }
+      }
     );
   } catch (error) {
     const isProxyError = error instanceof Error && (error.message.includes('502') || error.message.includes('503') || error.message.includes('504'));
@@ -103,7 +101,6 @@ export async function logout() {
     '/api/v1/auth/logout',
     {
       method: 'POST',
-    },
-    { withCsrf: true }
+    }
   );
 }

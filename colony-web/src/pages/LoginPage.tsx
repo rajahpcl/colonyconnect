@@ -13,7 +13,6 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const setUser = useAuthStore((state) => state.setUser);
-  const setCsrfToken = useAuthStore((state) => state.setCsrfToken);
   const [testMode, setTestMode] = useState(false);
   const [formState, setFormState] = useState<LoginState>({
     empNo: '',
@@ -24,7 +23,6 @@ export function LoginPage() {
     mutationFn: login,
     onSuccess: (user) => {
       setUser(user);
-      setCsrfToken(null);
       // Check if this was a test login (network error fallback)
       if (user.empNo === 'testadmin' || user.empNo === 'SECURITY') {
         setTestMode(true);

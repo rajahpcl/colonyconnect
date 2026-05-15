@@ -8,7 +8,6 @@ describe('ProtectedRoute', () => {
   beforeEach(() => {
     useAuthStore.setState({
       user: null,
-      csrfToken: null,
       isBootstrapping: false,
     });
   });
@@ -44,7 +43,6 @@ describe('ProtectedRoute', () => {
         vehicleRegistered: false,
         redirectUrl: '/app/admin/dashboard',
       },
-      csrfToken: null,
       isBootstrapping: false,
     });
 

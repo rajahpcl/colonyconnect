@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/colonyconnect/api': {
+      '/colonyconnectapi': {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },

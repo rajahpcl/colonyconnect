@@ -1,6 +1,11 @@
 import { useAuthStore } from '../auth/authStore';
 
-const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash if present
+/**
+ * API base path points to the backend context-path.
+ * In dev, Vite's proxy forwards /colonyconnectapi → http://localhost:8080.
+ * In production, the reverse-proxy (Nginx/Apache) routes this to Tomcat.
+ */
+const API_BASE = '/colonyconnectapi';
 
 type ApiRequestOptions = {
   withCsrf?: boolean;
@@ -10,29 +15,10 @@ function isJsonResponse(response: Response) {
   return response.headers.get('content-type')?.includes('application/json') ?? false;
 }
 
-export async function ensureCsrfToken() {
-  const existingToken = useAuthStore.getState().csrfToken;
-  if (existingToken) {
-    return existingToken;
-  }
-
-  const response = await fetch(`${BASE_PATH}/api/v1/auth/csrf`, {
-    credentials: 'include',
-  });
-
-  if (!response.ok) {
-    throw new Error('Unable to initialize CSRF token');
-  }
-
-  const payload = (await response.json()) as { token: string };
-  useAuthStore.getState().setCsrfToken(payload.token);
-  return payload.token;
-}
-
 export async function apiRequest<T>(
   path: string,
   init?: RequestInit,
-  options?: ApiRequestOptions
+  _options?: ApiRequestOptions
 ) {
   const headers = new Headers(init?.headers);
   headers.set('Accept', 'application/json');
@@ -41,15 +27,12 @@ export async function apiRequest<T>(
     headers.set('Content-Type', 'application/json');
   }
 
-  if (options?.withCsrf) {
-    const csrfToken = await ensureCsrfToken();
-    headers.set('X-XSRF-TOKEN', csrfToken);
-  }
+  // JWT is automatically sent via HTTP-only cookie – no manual header needed
 
-  const fullPath = path.startsWith(BASE_PATH) ? path : `${BASE_PATH}${path}`;
+  const fullPath = path.startsWith(API_BASE) ? path : `${API_BASE}${path}`;
   const response = await fetch(fullPath, {
     ...init,
-    credentials: 'include',
+    credentials: 'include', // Required to send/receive HTTP-only cookies
     headers,
   });
 

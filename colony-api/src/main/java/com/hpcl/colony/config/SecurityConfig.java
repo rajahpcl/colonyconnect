@@ -2,9 +2,10 @@ package com.hpcl.colony.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +18,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,40 +32,53 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    public static final String JWT_COOKIE_NAME = "COLONY_JWT";
+
+    private final JwtUtil jwtUtil;
+
+    @Value("${app.cors.allowed-origins:http://localhost:5173}")
+    private String allowedOrigins;
+
+    public SecurityConfig(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Spring Security 6.x requires explicit handler for CookieCsrfTokenRepository.
-        // Without this, deferred CSRF tokens cause 403 on ALL authenticated requests.
-        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
-        // Setting to null disables BREACH protection so the raw token can be used by SPA clients
-        csrfHandler.setCsrfRequestAttributeName(null);
-
         http
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(csrfHandler)
-                .ignoringRequestMatchers(
-                    "/api/v1/auth/login",
-                    "/api/v1/auth/security-login",
-                    "/api/v1/auth/sso/**"))
-            .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-            .addFilterBefore(new SessionAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())  // JWT in HTTP-only cookies is immune to CSRF
+            .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/api/v1/auth/login",
                     "/api/v1/auth/me",
                     "/api/v1/auth/security-login",
                     "/api/v1/auth/sso/**",
-                    "/api/v1/auth/csrf",
-                    "/api/v1/health").permitAll()
-                .anyRequest().authenticated())
-            .logout(logout -> logout
-                .logoutUrl("/api/v1/auth/logout")
-                .logoutSuccessUrl("/login?loggedOut"));
+                    "/api/v1/auth/logout",
+                    "/api/v1/health",
+                    "/actuator/**").permitAll()
+                .anyRequest().authenticated());
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(
+            Arrays.asList(allowedOrigins.split(","))
+        );
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);  // Required for cookies to be sent cross-origin
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
@@ -73,55 +87,52 @@ public class SecurityConfig {
     }
 
     /**
-     * Filter that bridges our custom session-based auth to Spring Security.
-     * 
-     * The AuthController.login() stores EMP_NO and ROLES in HttpSession,
-     * but Spring Security's .authenticated() check looks at SecurityContextHolder.
-     * This filter reads the session attributes and creates a proper Authentication
-     * object so Spring Security recognizes the user as authenticated.
+     * Filter that reads the JWT from the HTTP-only cookie and sets the
+     * SecurityContext so Spring Security recognizes the user as authenticated.
+     * Completely stateless – no server-side session is created.
      */
-    private static class SessionAuthenticationFilter extends OncePerRequestFilter {
+    private static class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+        private final JwtUtil jwtUtil;
+
+        JwtAuthenticationFilter(JwtUtil jwtUtil) {
+            this.jwtUtil = jwtUtil;
+        }
+
         @Override
-        @SuppressWarnings("unchecked")
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                         FilterChain filterChain) throws ServletException, IOException {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                HttpSession session = request.getSession(false);
-                if (session != null) {
-                    String empNo = (String) session.getAttribute("EMP_NO");
-                    if (empNo != null) {
-                        List<String> roles = (List<String>) session.getAttribute("ROLES");
-                        List<SimpleGrantedAuthority> authorities = (roles != null)
-                            ? roles.stream()
-                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                                .collect(Collectors.toList())
-                            : List.of(new SimpleGrantedAuthority("ROLE_RESIDENT"));
 
-                        UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(empNo, null, authorities);
-                        SecurityContextHolder.getContext().setAuthentication(auth);
-                    }
-                }
+            String token = extractTokenFromCookie(request);
+
+            if (token != null && jwtUtil.validateToken(token)) {
+                String empNo = jwtUtil.getEmpNoFromToken(token);
+                List<String> roles = jwtUtil.getRolesFromToken(token);
+
+                List<SimpleGrantedAuthority> authorities = (roles != null)
+                    ? roles.stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .collect(Collectors.toList())
+                    : List.of(new SimpleGrantedAuthority("ROLE_RESIDENT"));
+
+                UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(empNo, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
+
             filterChain.doFilter(request, response);
         }
-    }
 
-    /**
-     * Filter that eagerly loads the CsrfToken so the cookie is always written.
-     * Required for SPA clients that read XSRF-TOKEN from cookies.
-     */
-    private static class CsrfCookieFilter extends OncePerRequestFilter {
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                        FilterChain filterChain) throws ServletException, IOException {
-            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-            if (csrfToken != null) {
-                // Force the token to be rendered, which writes the XSRF-TOKEN cookie
-                csrfToken.getToken();
+        private String extractTokenFromCookie(HttpServletRequest request) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) return null;
+
+            for (Cookie cookie : cookies) {
+                if (JWT_COOKIE_NAME.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
             }
-            filterChain.doFilter(request, response);
+            return null;
         }
     }
 }
-
