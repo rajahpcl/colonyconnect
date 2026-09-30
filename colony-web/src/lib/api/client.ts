@@ -2,8 +2,8 @@ import { useAuthStore } from '../auth/authStore';
 
 /**
  * API base path points to the backend context-path.
- * In dev, Vite's proxy forwards /colonyconnectapi → http://localhost:8080.
- * In production, the reverse-proxy (Nginx/Apache) routes this to Tomcat.
+ * In dev, Vite's proxy forwards /colonyconnectapi to VITE_API_TARGET,
+ * defaulting to the Spring Boot API at http://127.0.0.1:8082.
  */
 const API_BASE = '/colonyconnectapi';
 
