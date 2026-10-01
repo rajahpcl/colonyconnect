@@ -55,7 +55,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())  // JWT in HTTP-only cookies is immune to CSRF
+            // Disable CSRF for API clients (stateless JWT or session flows).
+            // If you store JWTs in cookies you must consider CSRF protection.
+            .csrf(csrf -> csrf.disable())
+            // Explicitly disable form login / http basic to avoid framework-provided
+            // entry points that produce HTML or Basic auth responses for API calls.
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(form -> form.disable())
+            .exceptionHandling(ex ->
+                ex.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                })
+            )
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
