@@ -118,10 +118,20 @@ export function ElectricRatePage() {
 
   return (
     <div className="admin-page-container">
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Electricity Tariff Slabs</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Configure consumption slabs, energy charges, and fixed rates for colony quarters
+          </p>
+        </div>
+      </div>
+
       {/* ── Card: Add Form ── */}
       <div className="admin-card">
         <div className="admin-card-header">
-          <strong>Electric Rate</strong>
+          <strong>Tariff Slab Rates Entry</strong>
         </div>
         <div className="admin-card-body">
           <div className="admin-form-center">

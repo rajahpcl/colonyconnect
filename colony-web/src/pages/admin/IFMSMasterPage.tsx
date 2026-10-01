@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { listIFMSMaster, createIFMSMaster, deleteIFMSMaster } from '../../lib/api/admin-extended';
+import {
+  listIFMSMaster,
+  createIFMSMaster,
+  deleteIFMSMaster,
+  type IFMSMaster,
+} from '../../lib/api/admin-extended';
 import '../common.css';
 
 type MasterForm = {
@@ -11,7 +16,7 @@ type MasterForm = {
 
 export function IFMSMasterPage() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<MasterForm>();
-  const { data: masters = [], refetch, isLoading } = useQuery({
+  const { data: masters = [], refetch, isLoading } = useQuery<IFMSMaster[]>({
     queryKey: ['ifms-master'],
     queryFn: () => listIFMSMaster(),
   });
@@ -36,63 +41,87 @@ export function IFMSMasterPage() {
   return (
     <div className="container">
       <div className="header">
-        <h1>IFMS Master</h1>
+        <div>
+          <h1>IFMS Team Roster</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Maintain registered maintenance supervisors, contact emails, and phone extensions
+          </p>
+        </div>
       </div>
 
-      <div style={{ background: '#fff', padding: '2rem', marginBottom: '2rem', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <h3>Add IFMS Team Member</h3>
-        <form onSubmit={handleSubmit((data) => submit(data))}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Team Member ID</label>
-            <input
-              {...register('bvgTeamMemberId', {
-                required: 'Team Member ID required',
-                pattern: {
-                  value: /^[A-Z0-9]+$/,
-                  message: 'Only uppercase letters and numbers',
-                },
-              })}
-              className="form-control"
-              placeholder="e.g., IFMS001"
-            />
-            {errors.bvgTeamMemberId && <span className="error">{errors.bvgTeamMemberId.message}</span>}
-          </div>
+      <div className="admin-card" style={{ marginBottom: '2rem' }}>
+        <div className="admin-card-header">
+          <strong>Add New IFMS Team Member</strong>
+        </div>
+        <div className="admin-card-body">
+          <form onSubmit={handleSubmit((data) => submit(data))}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '1rem',
+                marginBottom: '1.25rem',
+              }}
+            >
+              <div>
+                <label className="admin-label" htmlFor="bvgTeamMemberId">Team Member ID *</label>
+                <input
+                  id="bvgTeamMemberId"
+                  {...register('bvgTeamMemberId', {
+                    required: 'Team Member ID required',
+                    pattern: {
+                      value: /^[A-Z0-9]+$/,
+                      message: 'Only uppercase letters and numbers',
+                    },
+                  })}
+                  className="form-control"
+                  placeholder="e.g. IFMS001"
+                />
+                {errors.bvgTeamMemberId && <span className="error">{errors.bvgTeamMemberId.message}</span>}
+              </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Email</label>
-            <input
-              type="email"
-              {...register('email', {
-                required: 'Email required',
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Invalid email',
-                },
-              })}
-              className="form-control"
-            />
-            {errors.email && <span className="error">{errors.email.message}</span>}
-          </div>
+              <div>
+                <label className="admin-label" htmlFor="email">Official Email *</label>
+                <input
+                  id="email"
+                  type="email"
+                  {...register('email', {
+                    required: 'Email required',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Invalid email address',
+                    },
+                  })}
+                  className="form-control"
+                  placeholder="supervisor@hpcl.in"
+                />
+                {errors.email && <span className="error">{errors.email.message}</span>}
+              </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Phone No.</label>
-            <input
-              {...register('phoneNo', {
-                required: 'Phone required',
-                pattern: {
-                  value: /^[0-9]{10}$/,
-                  message: '10 digit number',
-                },
-              })}
-              className="form-control"
-            />
-            {errors.phoneNo && <span className="error">{errors.phoneNo.message}</span>}
-          </div>
+              <div>
+                <label className="admin-label" htmlFor="phoneNo">Phone Number *</label>
+                <input
+                  id="phoneNo"
+                  {...register('phoneNo', {
+                    required: 'Phone required',
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: 'Must be 10 digits',
+                    },
+                  })}
+                  className="form-control"
+                  placeholder="9876543210"
+                />
+                {errors.phoneNo && <span className="error">{errors.phoneNo.message}</span>}
+              </div>
+            </div>
 
-          <button type="submit" disabled={isPending} className="btn btn-primary">
-            {isPending ? 'Adding...' : 'Add Member'}
-          </button>
-        </form>
+            <button type="submit" disabled={isPending} className="btn btn-primary">
+              <i className="fa fa-user-plus" aria-hidden="true" style={{ marginRight: '6px' }} />
+              {isPending ? 'Registering...' : 'Add Team Member'}
+            </button>
+          </form>
+        </div>
       </div>
 
       <h3>IFMS Team Members</h3>
@@ -111,8 +140,8 @@ export function IFMSMasterPage() {
               </tr>
             </thead>
             <tbody>
-              {masters.map((master: any) => (
-                <tr key={master.id}>
+              {masters.map((master: IFMSMaster) => (
+                <tr key={master.id ?? master.bvgTeamMemberId}>
                   <td>
                     <strong>{master.bvgTeamMemberId}</strong>
                   </td>
@@ -124,23 +153,25 @@ export function IFMSMasterPage() {
                     </span>
                   </td>
                   <td>
-                    <button
-                      onClick={() => {
-                        if (window.confirm('Delete this member?')) {
-                          remove(master.id);
-                        }
-                      }}
-                      disabled={isDeleting}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#e74c3c',
-                        cursor: 'pointer',
-                        textDecoration: 'underline',
-                      }}
-                    >
-                      Delete
-                    </button>
+                    {master.id !== undefined && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm('Delete this member?')) {
+                            remove(master.id!);
+                          }
+                        }}
+                        disabled={isDeleting}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#e74c3c',
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

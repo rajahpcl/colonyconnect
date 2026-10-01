@@ -60,10 +60,20 @@ export function AdminRolesPage() {
 
   return (
     <div className="admin-page-container">
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Complex Administrator Roles</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Assign employee numbers as authorized complex administrators for specific colony sectors
+          </p>
+        </div>
+      </div>
+
       {/* ── Add Role Form ── */}
       <div className="admin-card" style={{ maxWidth: '640px', margin: '0 auto 2rem' }}>
         <div className="admin-card-header">
-          <strong>Complex Admin</strong>
+          <strong>Complex Admin Role Allocation</strong>
         </div>
         <div className="admin-card-body">
           <div className="admin-form-row">

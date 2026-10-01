@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '../lib/api/auth';
 import { useAuthStore } from '../lib/auth/authStore';
@@ -131,7 +131,13 @@ export function LoginPage() {
             </form>
 
             <div className="modern-login-footer">
-               <p>Offline testing? Use <code>testadmin</code> / <code>admin123</code></p>
+              <p>Offline testing? Use <code>testadmin</code> / <code>admin123</code></p>
+              <p style={{ marginTop: '0.75rem', fontSize: '0.85rem' }}>
+                Colony Security Desk?{' '}
+                <Link to="/security/login" style={{ color: '#004085', fontWeight: 600, textDecoration: 'underline' }}>
+                  Security PIN Login →
+                </Link>
+              </p>
             </div>
           </div>
         </div>

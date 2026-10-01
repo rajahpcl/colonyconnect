@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   listColonies,
@@ -10,7 +11,6 @@ import {
   type RequestListParams,
 } from '../../lib/api/ifms';
 import '../common.css';
-
 /**
  * Request List — mirrors bvgAckByMe.jsp
  *
@@ -95,36 +95,46 @@ export function RequestListPage() {
 
   return (
     <div className="ifms-page-container">
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>IFMS Request Directory</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Comprehensive inquiry and audit list for all colony maintenance complaints across lifecycle stages
+          </p>
+        </div>
+      </div>
+
       {/* ── Filter Panel ── */}
       <div className="ifms-filter-panel">
         <div className="ifms-filter-row">
           {/* Date column */}
-          <div className="ifms-filter-group ifms-date-group">
-            <label className="ifms-filter-label">From Date:</label>
+          <div className="ifms-filter-group ifms-date-group" style={{ flex: 1, minWidth: '180px' }}>
+            <label className="ifms-filter-label" htmlFor="from_date">From Date:</label>
             <input
+              id="from_date"
               type="date"
               className="ifms-date-input"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              placeholder="Select From Date"
             />
-            <label className="ifms-filter-label" style={{ marginTop: '0.5rem' }}>
+            <label className="ifms-filter-label" htmlFor="to_date" style={{ marginTop: '0.5rem' }}>
               To Date:
             </label>
             <input
+              id="to_date"
               type="date"
               className="ifms-date-input"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               min={fromDate}
-              placeholder="Select To Date"
             />
           </div>
 
           {/* Colony multi-select */}
-          <div className="ifms-filter-group ifms-colony-group">
-            <label className="ifms-filter-label">
-              <strong>Colony :</strong>
+          <div className="ifms-filter-group ifms-colony-group" style={{ flex: 2, minWidth: '200px' }}>
+            <label className="ifms-filter-label" htmlFor="drp_colony">
+              <strong>Colony Sector(s):</strong>
             </label>
             <select
               id="drp_colony"
@@ -132,10 +142,10 @@ export function RequestListPage() {
               className="ifms-multiselect"
               value={selectedColonies}
               onChange={handleColonyChange}
-              size={6}
+              size={5}
             >
               {coloniesLoading ? (
-                <option disabled>Loading…</option>
+                <option disabled>Loading colonies…</option>
               ) : (
                 colonies.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -147,9 +157,9 @@ export function RequestListPage() {
           </div>
 
           {/* Status multi-select */}
-          <div className="ifms-filter-group ifms-status-group">
-            <label className="ifms-filter-label">
-              <strong>Status :</strong>
+          <div className="ifms-filter-group ifms-status-group" style={{ flex: 1.5, minWidth: '180px' }}>
+            <label className="ifms-filter-label" htmlFor="status">
+              <strong>Complaint Status:</strong>
             </label>
             <select
               id="status"
@@ -157,10 +167,10 @@ export function RequestListPage() {
               className="ifms-multiselect"
               value={selectedStatuses.map(String)}
               onChange={handleStatusChange}
-              size={6}
+              size={5}
             >
               {statusesLoading ? (
-                <option disabled>Loading…</option>
+                <option disabled>Loading statuses…</option>
               ) : (
                 statuses.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -172,9 +182,10 @@ export function RequestListPage() {
           </div>
 
           {/* Search button */}
-          <div className="ifms-filter-action">
-            <button className="ifms-search-btn" onClick={handleSearch}>
-              Search
+          <div className="ifms-filter-action" style={{ alignSelf: 'flex-end' }}>
+            <button className="ifms-search-btn" onClick={handleSearch} type="button">
+              <i className="fa fa-filter" aria-hidden="true" style={{ marginRight: '6px' }} />
+              Filter Requests
             </button>
           </div>
         </div>
@@ -183,6 +194,7 @@ export function RequestListPage() {
           <div className="ifms-validation-error">
             {errors.map((e, i) => (
               <p key={i} style={{ margin: '2px 0' }}>
+                <i className="fa fa-exclamation-circle" aria-hidden="true" style={{ marginRight: '4px' }} />
                 {e}
               </p>
             ))}
@@ -236,9 +248,9 @@ export function RequestListPage() {
                         return (
                           <tr key={rec.id}>
                             <td>
-                              <a className="ifms-action-link" href={`/app/complaints/${rec.id}`}>
-                                {rec.id}
-                              </a>
+                              <Link className="ifms-action-link" to={`/app/complaints/${rec.id}`}>
+                                <strong>#{rec.id}</strong>
+                              </Link>
                             </td>
                             <td>{rec.complexName ?? rec.complexCode ?? '-'}</td>
                             <td>{rec.flatNo ?? '-'}</td>
@@ -246,21 +258,24 @@ export function RequestListPage() {
                             <td>{rec.subcategoryName ?? '-'}</td>
                             <td>{rec.compDetails ?? '-'}</td>
                             <td>
-                              {rec.statusName ?? rec.status ?? '-'}
+                              <span className="status-badge status-active" style={{ background: '#e0f2fe', color: '#0284c7' }}>
+                                {rec.statusName ?? rec.status ?? '-'}
+                              </span>
                               {rec.updateDate && (
-                                <div style={{ fontSize: '0.75rem', color: '#666' }}>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
                                   on {formatDate(rec.updateDate)}
                                 </div>
                               )}
                             </td>
                             <td>{formatDate(rec.submitDate)}</td>
                             <td>
-                              <a
+                              <Link
                                 className="ifms-action-link"
-                                href={`/app/complaints/${rec.id}`}
+                                to={`/app/complaints/${rec.id}`}
+                                style={{ fontWeight: 600, color: '#004085' }}
                               >
-                                {isWorkable ? 'Work on Request' : 'View'}
-                              </a>
+                                {isWorkable ? 'Work on Request →' : 'View →'}
+                              </Link>
                             </td>
                             <td>
                               {statusNum >= 25 && (
@@ -268,6 +283,7 @@ export function RequestListPage() {
                                   className="ifms-voucher-btn"
                                   title="Generate Job Voucher"
                                   onClick={() => alert(`Voucher for complaint #${rec.id} — generate here`)}
+                                  type="button"
                                 >
                                   📋
                                 </button>

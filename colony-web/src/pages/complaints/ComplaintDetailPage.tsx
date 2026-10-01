@@ -81,8 +81,15 @@ export function ComplaintDetailPage() {
             Submitted on {new Date(complaint.submitDate).toLocaleDateString()}
           </p>
         </div>
+        <button
+          onClick={() => navigate('/app/complaints/my')}
+          className="btn btn-secondary"
+          type="button"
+        >
+          <i className="fa fa-arrow-left" aria-hidden="true" style={{ marginRight: '6px' }} />
+          Back to Complaints
+        </button>
       </div>
-
       <div className="complaint-detail">
         <div className="detail-section">
           <h3>Details</h3>

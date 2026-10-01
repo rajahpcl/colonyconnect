@@ -108,37 +108,64 @@ export function NewComplaintPage() {
     return null; // Return nothing while navigating away
   }
 
+  const compDetailsValue = watch('compDetails') || '';
+
   return (
     <div className="complaints-container">
+      {/* Header */}
       <div className="complaints-header">
-        <h1>Complaint</h1>
+        <div>
+          <h1>Register New Request</h1>
+          <p>Submit a maintenance, electrical, or plumbing service request for your colony quarter.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/app/complaints/my')}
+          className="btn btn-secondary"
+        >
+          <i className="fa fa-arrow-left" aria-hidden="true" style={{ marginRight: '6px' }} />
+          My Requests
+        </button>
       </div>
 
+      {/* Resident Info Card */}
       <div className="user-details-banner">
         <div className="user-detail-item">
-          <span className="label">Employee : </span>
-          <span className="value"><strong>{user?.name} ({user?.empNo})</strong></span>
+          <i className="fa fa-user-circle-o" aria-hidden="true" style={{ color: '#004085', fontSize: '1.2rem' }} />
+          <div>
+            <span className="label">Employee: </span>
+            <span className="value">{user?.name} ({user?.empNo})</span>
+          </div>
         </div>
         <div className="user-detail-item">
-          <span className="label">Colony : </span>
-          <span className="value">{user?.complexName || user?.complexCode}</span>
+          <i className="fa fa-building-o" aria-hidden="true" style={{ color: '#059669', fontSize: '1.2rem' }} />
+          <div>
+            <span className="label">Colony: </span>
+            <span className="value">{user?.complexName || user?.complexCode}</span>
+          </div>
         </div>
         <div className="user-detail-item">
-          <span className="label">Flat No: </span>
-          <span className="value">{user?.flatNo}</span>
+          <i className="fa fa-home" aria-hidden="true" style={{ color: '#d97706', fontSize: '1.2rem' }} />
+          <div>
+            <span className="label">Flat No: </span>
+            <span className="value">{user?.flatNo}</span>
+          </div>
         </div>
       </div>
 
+      {/* Complaint Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="complaint-form">
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="categoryId">Complaint Type:</label>
+            <label htmlFor="categoryId">
+              Complaint Type <span className="required">*</span>
+            </label>
             <select
               id="categoryId"
-              {...register('categoryId', { required: 'Select complaint type' })}
+              {...register('categoryId', { required: 'Please select a complaint type' })}
               className="form-control"
             >
-              <option value="">Select Complaint</option>
+              <option value="">Select Category (Electrical, Civil, Plumbing...)</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -149,13 +176,16 @@ export function NewComplaintPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="subcategoryId">Sub-Category:</label>
+            <label htmlFor="subcategoryId">
+              Sub-Category <span className="required">*</span>
+            </label>
             <select
               id="subcategoryId"
-              {...register('subcategoryId', { required: 'Select sub-category' })}
+              {...register('subcategoryId', { required: 'Please select a sub-category' })}
               className="form-control"
+              disabled={!categoryId || subcategories.length === 0}
             >
-              <option value="">Select Sub-Category</option>
+              <option value="">{categoryId ? 'Select Specific Issue' : 'Select Category First'}</option>
               {subcategories.map((subcat) => (
                 <option key={subcat.id} value={subcat.id}>
                   {subcat.name}
@@ -164,69 +194,115 @@ export function NewComplaintPage() {
             </select>
             {errors.subcategoryId && <span className="error-text">{errors.subcategoryId.message}</span>}
           </div>
-          
-          <div className="form-group">
-            <label>Complaint Id:</label>
-            <input type="text" className="form-control" value={subcategoryId || ''} disabled />
+
+          <div className="form-group" style={{ maxWidth: '200px' }}>
+            <label>Subcategory ID:</label>
+            <input
+              type="text"
+              className="form-control"
+              value={subcategoryId || '—'}
+              disabled
+              style={{ background: '#f8fafc', color: '#64748b' }}
+            />
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group full-width">
-            <label htmlFor="compDetails">Complaint Details (Max 200 characters):</label>
-            <textarea
-              id="compDetails"
-              {...register('compDetails', {
-                required: 'Enter complaint details',
-                maxLength: { value: 200, message: 'Maximum 200 characters allowed' }
-              })}
-              className="form-control"
-              rows={3}
-            />
-            {errors.compDetails && <span className="error-text">{errors.compDetails.message}</span>}
+        <div className="form-group">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label htmlFor="compDetails" style={{ margin: 0 }}>
+              Complaint Description <span className="required">*</span>
+            </label>
+            <span style={{ fontSize: '0.78rem', color: compDetailsValue.length > 180 ? '#dc2626' : '#64748b' }}>
+              {compDetailsValue.length}/200 characters
+            </span>
           </div>
+          <textarea
+            id="compDetails"
+            {...register('compDetails', {
+              required: 'Please describe your complaint',
+              maxLength: { value: 200, message: 'Maximum 200 characters allowed' },
+            })}
+            className="form-control"
+            rows={4}
+            placeholder="Please detail the location, issue severity, and convenient inspection timings..."
+          />
+          {errors.compDetails && <span className="error-text">{errors.compDetails.message}</span>}
+        </div>
 
-          <div className="form-group">
-            <label>Status :</label>
+        {/* Attachment Upload Card */}
+        <div
+          style={{
+            background: '#f8fafc',
+            border: '1px dashed #cbd5e1',
+            borderRadius: '10px',
+            padding: '1.25rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
+            <i className="fa fa-paperclip" aria-hidden="true" style={{ color: '#004085', fontSize: '1.1rem' }} />
+            <strong style={{ fontSize: '0.92rem', color: '#1e293b' }}>Supporting Photos / Documents (Optional)</strong>
           </div>
+          <p style={{ margin: '0 0 1rem 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Attach clear photos of the issue to speed up technician diagnosis. Max 2 files (PDF, JPG, PNG, BMP).
+          </p>
 
-          <div className="form-group">
-            <label htmlFor="uploadFile">Upload file:</label>
-            <input
-              id="uploadFile"
-              type="file"
-              {...register('uploadFile')}
-              className="form-control"
-              accept=".pdf,.jpg,.jpeg,.png,.bmp"
-            />
-            <small>Maximum 2 files (PDF, JPG, PNG, BMP)</small>
-            
-            <input
-              id="uploadFile1"
-              type="file"
-              {...register('uploadFile1')}
-              className="form-control mt-2"
-              accept=".pdf,.jpg,.jpeg,.png,.bmp"
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="uploadFile" style={{ fontSize: '0.85rem' }}>Primary Attachment:</label>
+              <input
+                id="uploadFile"
+                type="file"
+                {...register('uploadFile')}
+                className="form-control"
+                accept=".pdf,.jpg,.jpeg,.png,.bmp"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="uploadFile1" style={{ fontSize: '0.85rem' }}>Secondary Attachment:</label>
+              <input
+                id="uploadFile1"
+                type="file"
+                {...register('uploadFile1')}
+                className="form-control"
+                accept=".pdf,.jpg,.jpeg,.png,.bmp"
+              />
+            </div>
           </div>
         </div>
 
         {fileError && <div className="error-message">{fileError}</div>}
 
+        {/* Form Actions */}
         <div className="form-actions-row">
-          <button type="button" onClick={() => { /* reset logic */ }} className="btn btn-danger">
-            Reset
+          <button
+            type="button"
+            onClick={() => {
+              setValue('compDetails', '');
+              setValue('categoryId', '');
+              setValue('subcategoryId', '');
+            }}
+            className="btn btn-secondary"
+          >
+            <i className="fa fa-refresh" aria-hidden="true" style={{ marginRight: '6px' }} />
+            Reset Form
           </button>
+
           <div className="right-actions">
-            <button type="button" className="btn btn-secondary mr-2">
-              Save
+            <button
+              type="button"
+              onClick={() => navigate('/app/complaints/my')}
+              className="btn btn-secondary mr-2"
+            >
+              Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
               className="btn btn-primary"
             >
-              Submit
+              <i className="fa fa-paper-plane" aria-hidden="true" style={{ marginRight: '6px' }} />
+              {isPending ? 'Submitting Request…' : 'Submit Complaint'}
             </button>
           </div>
         </div>

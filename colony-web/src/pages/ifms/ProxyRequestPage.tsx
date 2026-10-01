@@ -107,79 +107,136 @@ export function ProxyRequestPage() {
 
   return (
     <div className="ifms-page-container">
-      {/* Card wrapper matching legacy layout */}
-      <div className="ifms-proxy-card">
-        <div className="ifms-proxy-card-header">
-          <h3>Raise Proxy Request</h3>
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Raise Proxy Request</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Submit an urgent maintenance request on behalf of an employee or unoccupied flat
+          </p>
         </div>
-        <div className="ifms-proxy-card-body">
-          {/* ── Row 1: Complex → Flat → Employee (auto) ── */}
-          <div className="ifms-proxy-row">
-            <label className="ifms-proxy-label">Select Complex :</label>
-            <select
-              id="complex"
-              className="ifms-proxy-select"
-              value={selectedComplex}
-              onChange={(e) => {
-                setSelectedComplex(e.target.value);
-                setManualEmpNo(''); // clear manual if they pick dropdown path
+      </div>
+
+      {/* Card wrapper */}
+      <div className="ifms-proxy-card" style={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <div
+          className="ifms-proxy-card-header"
+          style={{
+            background: 'linear-gradient(135deg, #00173d 0%, #003366 100%)',
+            color: '#ffffff',
+            padding: '1rem 1.25rem',
+            borderBottom: 'none',
+          }}
+        >
+          <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#ffffff' }}>Proxy Request Dispatcher</h3>
+        </div>
+        <div className="ifms-proxy-card-body" style={{ padding: '1.5rem' }}>
+          {/* Option A: Select Complex & Flat */}
+          <div style={{ marginBottom: '1.25rem' }}>
+            <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#0f172a' }}>
+              Option A: Lookup by Colony & Flat Number
+            </h4>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: '1rem',
+                alignItems: 'end',
               }}
             >
-              <option value="">Select Complex</option>
-              {complexesLoading ? (
-                <option disabled>Loading…</option>
-              ) : (
-                complexes.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.name}
-                  </option>
-                ))
-              )}
-            </select>
+              <div>
+                <label className="ifms-proxy-label" htmlFor="complex" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+                  Select Complex :
+                </label>
+                <select
+                  id="complex"
+                  className="ifms-proxy-select"
+                  value={selectedComplex}
+                  onChange={(e) => {
+                    setSelectedComplex(e.target.value);
+                    setManualEmpNo('');
+                  }}
+                  style={{ width: '100%', minHeight: '44px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                >
+                  <option value="">Select Complex</option>
+                  {complexesLoading ? (
+                    <option disabled>Loading…</option>
+                  ) : (
+                    complexes.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
 
-            <label className="ifms-proxy-label" style={{ marginLeft: '1rem' }}>
-              Select Flat:
-            </label>
-            <select
-              id="flat"
-              className="ifms-proxy-select ifms-proxy-flat"
-              value={selectedFlat}
-              onChange={(e) => setSelectedFlat(e.target.value)}
-              disabled={!selectedComplex || flatsLoading}
-            >
-              <option value="">Select Flat</option>
-              {flatsLoading ? (
-                <option disabled>Loading…</option>
-              ) : (
-                flats.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))
-              )}
-            </select>
+              <div>
+                <label className="ifms-proxy-label" htmlFor="flat" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+                  Select Flat:
+                </label>
+                <select
+                  id="flat"
+                  className="ifms-proxy-select"
+                  value={selectedFlat}
+                  onChange={(e) => setSelectedFlat(e.target.value)}
+                  disabled={!selectedComplex || flatsLoading}
+                  style={{ width: '100%', minHeight: '44px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                >
+                  <option value="">Select Flat</option>
+                  {flatsLoading ? (
+                    <option disabled>Loading…</option>
+                  ) : (
+                    flats.map((f) => (
+                      <option key={f} value={f}>
+                        {f}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
 
-            <label className="ifms-proxy-label" style={{ marginLeft: '1rem' }}>
-              Employee :
-            </label>
-            <input
-              id="top_emp_no1"
-              type="text"
-              className="ifms-proxy-emp-readonly"
-              value={autoEmpNo}
-              readOnly
-              placeholder="(auto-filled)"
-            />
+              <div>
+                <label className="ifms-proxy-label" htmlFor="top_emp_no1" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+                  Allotted Employee No:
+                </label>
+                <input
+                  id="top_emp_no1"
+                  type="text"
+                  className="ifms-proxy-emp-readonly"
+                  value={autoEmpNo}
+                  readOnly
+                  placeholder="(auto-filled from flat record)"
+                  style={{ width: '100%', minHeight: '44px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+            </div>
           </div>
 
           {/* ── OR divider ── */}
-          <div className="ifms-proxy-or">
-            <strong>OR</strong>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '1.5rem 0',
+              color: '#94a3b8',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+            }}
+          >
+            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+            <span style={{ padding: '0 1rem', background: '#ffffff' }}>OR</span>
+            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
           </div>
 
-          {/* ── Row 2: Manual emp no ── */}
-          <div className="ifms-proxy-row">
-            <label className="ifms-proxy-label">Enter Employee No :</label>
+          {/* Option B: Manual emp no */}
+          <div style={{ marginBottom: '1.5rem', maxWidth: '340px' }}>
+            <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#0f172a' }}>
+              Option B: Enter Employee Number Directly
+            </h4>
+            <label className="ifms-proxy-label" htmlFor="top_emp_no" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+              Employee Number :
+            </label>
             <input
               id="top_emp_no"
               type="text"
@@ -187,29 +244,42 @@ export function ProxyRequestPage() {
               value={manualEmpNo}
               onChange={(e) => {
                 setManualEmpNo(e.target.value);
-                // If they type manually, clear the dropdown path
                 if (e.target.value.trim()) {
                   setSelectedComplex('');
                   setSelectedFlat('');
                   setAutoEmpNo('');
                 }
               }}
-              placeholder="e.g. 12345678"
+              placeholder="e.g. 31982600"
+              style={{ width: '100%', minHeight: '44px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
             />
           </div>
 
-          {/* ── Messages ── */}
-          {errorMsg && <p className="ifms-validation-error">{errorMsg}</p>}
-          {successMsg && <p className="ifms-success-msg">{successMsg}</p>}
+          {/* Messages */}
+          {errorMsg && (
+            <p className="ifms-validation-error" style={{ padding: '0.75rem', background: '#fee2e2', borderRadius: '8px', border: '1px solid #fca5a5' }}>
+              <i className="fa fa-exclamation-circle" aria-hidden="true" style={{ marginRight: '6px' }} />
+              {errorMsg}
+            </p>
+          )}
+          {successMsg && (
+            <p className="ifms-success-msg" style={{ padding: '0.75rem', background: '#dcfce7', borderRadius: '8px', border: '1px solid #86efac' }}>
+              <i className="fa fa-check-circle" aria-hidden="true" style={{ marginRight: '6px' }} />
+              {successMsg}
+            </p>
+          )}
 
-          {/* ── Submit ── */}
-          <div className="ifms-proxy-row" style={{ justifyContent: 'center', marginTop: '1.5rem' }}>
+          {/* Submit */}
+          <div style={{ marginTop: '1.5rem' }}>
             <button
               className="ifms-raise-btn"
               onClick={handleSubmit}
               disabled={isPending}
+              type="button"
+              style={{ minHeight: '46px', minWidth: '200px' }}
             >
-              {isPending ? 'Raising…' : 'Raise Request'}
+              <i className="fa fa-paper-plane" aria-hidden="true" style={{ marginRight: '6px' }} />
+              {isPending ? 'Submitting Proxy…' : 'Proceed with Proxy Request'}
             </button>
           </div>
         </div>

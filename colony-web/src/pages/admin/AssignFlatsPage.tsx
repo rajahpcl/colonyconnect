@@ -111,10 +111,20 @@ export function AssignFlatsPage() {
 
   return (
     <div className="admin-page-container">
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Resident Flat Allotments</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Map employee numbers to colony quarters and maintain active residency records
+          </p>
+        </div>
+      </div>
+
       {/* ── Card: Form ── */}
       <div className="admin-card">
         <div className="admin-card-header">
-          <strong>COLONY MANAGEMENT</strong>
+          <strong>Assign / Reallocate Flat</strong>
         </div>
         <div className="admin-card-body">
           {/* Row 1: Complex + Employee */}

@@ -1,16 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { listPO } from '../../lib/api/po';
+import { listPO, type PO } from '../../lib/api/po';
 import '../common.css';
 
 export function POListPage() {
   const [filter, setFilter] = useState('');
-  const { data: pos = [], isLoading } = useQuery({
+  const { data: pos = [], isLoading } = useQuery<PO[]>({
     queryKey: ['po'],
     queryFn: () => listPO(),
   });
 
-  const filtered = pos.filter((p: any) =>
+  const filtered = pos.filter((p) =>
     !filter || p.status === filter ||
     p.poNumber?.toLowerCase().includes(filter.toLowerCase())
   );
@@ -18,44 +18,98 @@ export function POListPage() {
   return (
     <div className="container">
       <div className="header">
-        <h1>Purchase Orders</h1>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="form-control"
-          style={{ maxWidth: '200px' }}
-        >
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="completed">Completed</option>
-        </select>
+        <div>
+          <h1>Purchase Orders & Invoices</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Authorized material procurement orders, contract approvals, and invoice records
+          </p>
+        </div>
+        <div style={{ width: '100%', maxWidth: '240px' }}>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="form-control"
+            aria-label="Filter POs by status"
+          >
+            <option value="">All Statuses</option>
+            <option value="pending">Pending Approval</option>
+            <option value="approved">Approved</option>
+            <option value="completed">Completed / Settled</option>
+          </select>
+        </div>
       </div>
 
-      {isLoading ? <p>Loading...</p> : (
+      {isLoading ? (
+        <p style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Loading purchase orders...</p>
+      ) : (
         <div className="table-responsive">
           <table className="table">
             <thead>
               <tr>
                 <th>PO Number</th>
-                <th>Amount</th>
+                <th>Order Amount</th>
                 <th>Status</th>
-                <th>Created</th>
+                <th>Creation Date</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((po: any) => (
+              {filtered.map((po) => (
                 <tr key={po.id}>
-                  <td><strong>{po.poNumber}</strong></td>
-                  <td>₹{po.amount?.toFixed(2)}</td>
                   <td>
-                    <span className={`status-badge status-${po.status?.toLowerCase()}`}>
+                    <span
+                      style={{
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        color: '#004085',
+                        background: '#f8fafc',
+                        border: '1px solid #cbd5e1',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.88rem',
+                      }}
+                    >
+                      {po.poNumber}
+                    </span>
+                  </td>
+                  <td>
+                    <strong style={{ color: '#0f172a' }}>
+                      ₹{po.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </strong>
+                  </td>
+                  <td>
+                    <span
+                      className={`status-badge status-${po.status?.toLowerCase() === 'approved' ? 'active' : 'inactive'}`}
+                      style={{
+                        background:
+                          po.status?.toLowerCase() === 'approved'
+                            ? '#dcfce7'
+                            : po.status?.toLowerCase() === 'pending'
+                            ? '#fef3c7'
+                            : '#f1f5f9',
+                        color:
+                          po.status?.toLowerCase() === 'approved'
+                            ? '#15803d'
+                            : po.status?.toLowerCase() === 'pending'
+                            ? '#b45309'
+                            : '#475569',
+                      }}
+                    >
                       {po.status}
                     </span>
                   </td>
-                  <td>{new Date(po.createdDate).toLocaleDateString()}</td>
+                  <td>
+                    <i className="fa fa-calendar-o" aria-hidden="true" style={{ marginRight: '6px', color: '#64748b' }} />
+                    {po.createdDate ? new Date(po.createdDate).toLocaleDateString() : '—'}
+                  </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                    No purchase orders found matching selected filter.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

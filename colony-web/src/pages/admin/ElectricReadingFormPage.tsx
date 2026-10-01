@@ -231,10 +231,20 @@ export function ElectricReadingFormPage() {
 
   return (
     <div className="admin-page-container">
+      {/* Header */}
+      <div className="header">
+        <div>
+          <h1>Electric Meter Readings</h1>
+          <p style={{ color: '#64748b', margin: '0.25rem 0 0 0', fontSize: '0.9rem' }}>
+            Record flat electricity consumption, calculate recovery amount, and approve monthly billing batches
+          </p>
+        </div>
+      </div>
+
       {/* ── Electric Reading Form ── */}
       <div className="admin-card">
         <div className="admin-card-header">
-          <strong>Electric Reading</strong>
+          <strong>New Reading Entry</strong>
         </div>
         <div className="admin-card-body">
           {/* Row 1: Date, Complex, Building */}

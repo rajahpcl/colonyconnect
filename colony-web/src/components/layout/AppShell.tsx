@@ -100,7 +100,8 @@ export function AppShell() {
   const sessionTime = useSessionTimer();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
+  const dropdownTimerRef = useRef<number | null>(null);
 
   const logoutMutation = useMutation({
     mutationFn: logout,
@@ -116,6 +117,23 @@ export function AppShell() {
     setOpenDropdown(null);
   }, [location.pathname]);
 
+  // Lock background scroll when mobile menu is open & handle Esc key
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setMobileMenuOpen(false);
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [mobileMenuOpen]);
+
   if (!user) {
     return null;
   }
@@ -123,135 +141,281 @@ export function AppShell() {
   const visibleItems = navItems.filter((item) => hasAnyRole(user, item.allowedRoles));
 
   function handleDropdownEnter(label: string) {
-    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current);
+    if (dropdownTimerRef.current !== null) {
+      window.clearTimeout(dropdownTimerRef.current);
+    }
     setOpenDropdown(label);
   }
 
   function handleDropdownLeave() {
-    dropdownTimerRef.current = setTimeout(() => {
+    dropdownTimerRef.current = window.setTimeout(() => {
       setOpenDropdown(null);
     }, 150);
   }
 
+  function toggleMobileSubmenu(label: string) {
+    setMobileExpanded((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  }
+
   return (
     <div className="colony-shell">
-      {/* ---- HEADER (matches old JSP layout) ---- */}
+      {/* ---- TOP APP HEADER ---- */}
       <header className="colony-header">
         <div className="colony-header__inner">
-          {/* Left: Large HPCL Logo */}
-          <div className="colony-header__logo-area" id="big_logo">
-              <img
-                src={`${import.meta.env.BASE_URL}new_logo_light.svg`}
-                alt="HPCL - Hindustan Petroleum Corporation Limited"
-                className="colony-header__logo-svg"
-              />
-          </div>
+          {/* Brand */}
+          <NavLink to="/app/home" className="colony-header__brand" aria-label="ColonyConnect Home">
+            <img
+              src={`${import.meta.env.BASE_URL}new_logo_light.svg`}
+              alt="HPCL Logo"
+              className="colony-header__brand-logo"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hp.png`;
+              }}
+            />
+            <div className="colony-header__titles">
+              <span className="colony-header__app-title">ColonyConnect</span>
+              <span className="colony-header__app-subtitle">Hindustan Petroleum Corporation Limited</span>
+            </div>
+          </NavLink>
 
-          {/* Right: Title row + Nav bar */}
-          <div className="colony-header__right">
-            {/* Top row: App title + user info */}
-            <div className="colony-header__title-row">
-              <div className="colony-header__small-logo" id="small_logo">
-                <img src={`${import.meta.env.BASE_URL}hp.png`} alt="HPCL" className="colony-header__hp-img" />
-              </div>
-              <h3 className="colony-header__app-title">Colony Maintenance</h3>
-              <div className="colony-header__user-info">
-                <span className="colony-header__user-name">
-                  <i className="colony-icon colony-icon--user" />
-                  &nbsp;{user.name}
+          {/* Actions & User Profile */}
+          <div className="colony-header__actions">
+            {/* Session countdown */}
+            <div className="colony-session-pill" title="Active session time remaining">
+              <i className="fa fa-clock-o" aria-hidden="true" />
+              <span>Session: <strong>{sessionTime}</strong></span>
+            </div>
+
+            {/* Desktop User Profile chip */}
+            <div className="colony-user-chip">
+              <img
+                src={`${import.meta.env.BASE_URL}user.png`}
+                alt=""
+                className="colony-user-chip__avatar"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hpcl_logo.png`;
+                }}
+              />
+              <div className="colony-user-chip__meta">
+                <span className="colony-user-chip__name">{user.name}</span>
+                <span className="colony-user-chip__role">
+                  {user.role} {user.flatNo ? `• Flat ${user.flatNo}` : ''}
                 </span>
-              </div>
-              <div className="colony-header__session-badge">
-                Session: <strong>{sessionTime}</strong>
               </div>
             </div>
 
-            {/* Bottom row: Navigation bar */}
-            <nav className={`colony-navbar ${mobileMenuOpen ? 'colony-navbar--open' : ''}`} aria-label="Main navigation">
-              {/* Mobile hamburger */}
-              <button
-                className="colony-navbar__hamburger"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                type="button"
-                aria-label="Toggle menu"
-              >
-                <span className={`hamburger-line ${mobileMenuOpen ? 'open' : ''}`} />
-                <span className={`hamburger-line ${mobileMenuOpen ? 'open' : ''}`} />
-                <span className={`hamburger-line ${mobileMenuOpen ? 'open' : ''}`} />
-              </button>
+            {/* Desktop Logout Button */}
+            <button
+              className="colony-btn-logout-desktop"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+              type="button"
+              title="Sign out of ColonyConnect"
+            >
+              <i className="fa fa-sign-out" aria-hidden="true" />
+              <span>{logoutMutation.isPending ? 'Signing out…' : 'Logout'}</span>
+            </button>
 
-              {/* Avatar + name in nav */}
-              <div className="colony-navbar__avatar">
-                <img src={`${import.meta.env.BASE_URL}user.png`} alt="" className="colony-navbar__avatar-img" onError={(e) => { (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hpcl_logo.png`; }} />
-                <span className="colony-navbar__avatar-name">{user.name}</span>
-              </div>
-
-              {/* Nav items */}
-              <ul className="colony-navbar__items">
-                {visibleItems.map((item) => {
-                  if (item.children) {
-                    const visibleChildren = item.children.filter((child) => hasAnyRole(user, child.allowedRoles));
-                    if (visibleChildren.length === 0) return null;
-                    const isOpen = openDropdown === item.label;
-                    return (
-                      <li
-                        className="colony-nav-dropdown"
-                        key={item.label}
-                        onMouseEnter={() => handleDropdownEnter(item.label)}
-                        onMouseLeave={handleDropdownLeave}
-                      >
-                        <button
-                          className={`colony-nav-link colony-nav-link--dropdown ${isOpen ? 'colony-nav-link--open' : ''}`}
-                          type="button"
-                          onClick={() => setOpenDropdown(isOpen ? null : item.label)}
-                        >
-                          {item.label}
-                        </button>
-                        <div className={`colony-dropdown-menu ${isOpen ? 'colony-dropdown-menu--visible' : ''}`}>
-                          {visibleChildren.map((child) => (
-                            <NavLink
-                              key={child.to}
-                              className={({ isActive }) => `colony-dropdown-item${isActive ? ' colony-dropdown-item--active' : ''}`}
-                              to={child.to}
-                            >
-                              {child.label}
-                            </NavLink>
-                          ))}
-                        </div>
-                      </li>
-                    );
-                  }
-
-                  return (
-                    <li key={item.to}>
-                      <NavLink
-                        className={({ isActive }) => `colony-nav-link${isActive ? ' colony-nav-link--active' : ''}`}
-                        to={item.to}
-                      >
-                        {item.label}
-                      </NavLink>
-                    </li>
-                  );
-                })}
-
-                {/* Logout */}
-                <li>
-                  <button
-                    className="colony-nav-link colony-nav-link--logout"
-                    onClick={() => logoutMutation.mutate()}
-                    disabled={logoutMutation.isPending}
-                    type="button"
-                  >
-                    {logoutMutation.isPending ? 'Signing out…' : 'Logout'}
-                  </button>
-                </li>
-              </ul>
-            </nav>
+            {/* Mobile Hamburger Button */}
+            <button
+              className={`colony-hamburger-btn ${mobileMenuOpen ? 'colony-hamburger-btn--open' : ''}`}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              type="button"
+              aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={mobileMenuOpen}
+            >
+              <span className="hamburger-bar" />
+              <span className="hamburger-bar" />
+              <span className="hamburger-bar" />
+            </button>
           </div>
         </div>
+
+        {/* ---- DESKTOP PRIMARY NAVIGATION BAR ---- */}
+        <nav className="colony-desktop-navbar" aria-label="Primary Desktop Navigation">
+          <div className="colony-desktop-navbar__inner">
+            <ul className="colony-desktop-navbar__list">
+              {visibleItems.map((item) => {
+                if (item.children) {
+                  const visibleChildren = item.children.filter((child) => hasAnyRole(user, child.allowedRoles));
+                  if (visibleChildren.length === 0) return null;
+                  const isOpen = openDropdown === item.label;
+
+                  return (
+                    <li
+                      className="colony-nav-item"
+                      key={item.label}
+                      onMouseEnter={() => handleDropdownEnter(item.label)}
+                      onMouseLeave={handleDropdownLeave}
+                    >
+                      <button
+                        className={`colony-nav-link colony-nav-link--dropdown ${isOpen ? 'colony-nav-link--open' : ''}`}
+                        type="button"
+                        onClick={() => setOpenDropdown(isOpen ? null : item.label)}
+                        aria-expanded={isOpen}
+                      >
+                        {item.icon && <i className={`fa ${item.icon}`} aria-hidden="true" />}
+                        <span>{item.label}</span>
+                      </button>
+                      <div className={`colony-dropdown-menu ${isOpen ? 'colony-dropdown-menu--visible' : ''}`}>
+                        {visibleChildren.map((child) => (
+                          <NavLink
+                            key={child.to}
+                            className={({ isActive }) =>
+                              `colony-dropdown-item${isActive ? ' colony-dropdown-item--active' : ''}`
+                            }
+                            to={child.to}
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li className="colony-nav-item" key={item.to}>
+                    <NavLink
+                      className={({ isActive }) =>
+                        `colony-nav-link${isActive ? ' colony-nav-link--active' : ''}`
+                      }
+                      to={item.to}
+                    >
+                      {item.icon && <i className={`fa ${item.icon}`} aria-hidden="true" />}
+                      <span>{item.label}</span>
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </nav>
       </header>
 
-      {/* ---- Accent bar (orange shimmer) ---- */}
+      {/* ---- MOBILE NAVIGATION DRAWER (Slide-Out Sheet) ---- */}
+      {mobileMenuOpen && (
+        <div
+          className="colony-drawer-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {mobileMenuOpen && (
+        <aside className="colony-drawer" aria-label="Mobile Navigation Menu">
+          {/* Drawer Header with User Card */}
+          <div className="colony-drawer__header">
+            <div className="colony-drawer__user">
+              <img
+                src={`${import.meta.env.BASE_URL}user.png`}
+                alt=""
+                className="colony-drawer__avatar"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hpcl_logo.png`;
+                }}
+              />
+              <div className="colony-drawer__user-info">
+                <h4>{user.name}</h4>
+                <p>Emp #{user.empNo} • {user.role}</p>
+                {user.complexName && <p style={{ color: '#38bdf8' }}>{user.complexName}</p>}
+              </div>
+            </div>
+            <button
+              className="colony-drawer__close"
+              onClick={() => setMobileMenuOpen(false)}
+              type="button"
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Drawer Links */}
+          <nav className="colony-drawer__nav">
+            {visibleItems.map((item) => {
+              if (item.children) {
+                const visibleChildren = item.children.filter((child) => hasAnyRole(user, child.allowedRoles));
+                if (visibleChildren.length === 0) return null;
+                const isExpanded = mobileExpanded[item.label] ?? false;
+
+                return (
+                  <div key={item.label} style={{ marginBottom: '4px' }}>
+                    <button
+                      className={`colony-drawer__link ${isExpanded ? 'colony-drawer__link--open' : ''}`}
+                      onClick={() => toggleMobileSubmenu(item.label)}
+                      type="button"
+                      aria-expanded={isExpanded}
+                    >
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        {item.icon && <i className={`fa ${item.icon}`} aria-hidden="true" />}
+                        {item.label}
+                      </span>
+                      <span className="colony-drawer__accordion-icon">▼</span>
+                    </button>
+                    {isExpanded && (
+                      <div className="colony-drawer__sublist">
+                        {visibleChildren.map((child) => (
+                          <NavLink
+                            key={child.to}
+                            to={child.to}
+                            className={({ isActive }) =>
+                              `colony-drawer__sublink${isActive ? ' colony-drawer__sublink--active' : ''}`
+                            }
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `colony-drawer__link${isActive ? ' colony-drawer__link--active' : ''}`
+                  }
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    {item.icon && <i className={`fa ${item.icon}`} aria-hidden="true" />}
+                    {item.label}
+                  </span>
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          {/* Drawer Footer */}
+          <div className="colony-drawer__footer">
+            <div className="colony-drawer__session-info">
+              <i className="fa fa-clock-o" aria-hidden="true" /> Session active: <strong>{sessionTime}</strong>
+            </div>
+            <button
+              className="colony-drawer__logout"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                logoutMutation.mutate();
+              }}
+              disabled={logoutMutation.isPending}
+              type="button"
+            >
+              <i className="fa fa-sign-out" aria-hidden="true" />
+              <span>{logoutMutation.isPending ? 'Signing out…' : 'Sign out'}</span>
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* ---- Accent bar (HPCL tri-color shimmer) ---- */}
       <div className="colony-accent-bar" />
 
       {/* ---- MAIN CONTENT ---- */}
@@ -262,8 +426,8 @@ export function AppShell() {
       {/* ---- FOOTER ---- */}
       <footer className="colony-footer">
         <div className="colony-footer__inner">
-          <p><b>© All Rights Reserved</b> Hindustan Petroleum Corporation Limited</p>
-          <span className="colony-footer__version">ColonyConnect v2.0</span>
+          <p>© {new Date().getFullYear()} Hindustan Petroleum Corporation Limited. All Rights Reserved.</p>
+          <span className="colony-footer__version">ColonyConnect Enterprise v2.0</span>
         </div>
       </footer>
     </div>
