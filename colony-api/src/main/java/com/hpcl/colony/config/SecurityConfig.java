@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -34,17 +36,23 @@ public class SecurityConfig {
 
     public static final String JWT_COOKIE_NAME = "COLONY_JWT";
 
-    private final JwtUtil jwtUtil;
-
     @Value("${app.cors.allowed-origins:http://localhost:5173}")
     private String allowedOrigins;
 
-    public SecurityConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    /**
+     * Provide a JwtUtil bean from properties. Tests using @WebMvcTest import
+     * SecurityConfig and will therefore get this bean even if component
+     * scanning is restricted.
+     */
+    @Bean
+    public JwtUtil jwtUtil(@Value("${app.jwt.secret:test-default-secret-key-which-is-at-least-32-bytes!!}") String secret,
+                           @Value("${app.jwt.expiration-ms:86400000}") long expirationMs) {
+        return new JwtUtil(secret, expirationMs);
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())  // JWT in HTTP-only cookies is immune to CSRF

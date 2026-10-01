@@ -59,7 +59,15 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<LoginResponse> getCurrentUser(HttpServletRequest request) {
-        // Try to read empNo from the JWT cookie (even though /me is permitAll)
+        // First try session attribute (used by tests and some legacy flows).
+        if (request.getSession(false) != null) {
+            Object empAttr = request.getSession(false).getAttribute("EMP_NO");
+            if (empAttr instanceof String empNoStr && !empNoStr.isBlank()) {
+                return ResponseEntity.ok(authService.getCurrentUserProfile(empNoStr));
+            }
+        }
+
+        // Fallback to JWT cookie (stateless flow)
         String empNo = extractEmpNoFromCookie(request);
         if (empNo == null) {
             return ResponseEntity.status(401).build();

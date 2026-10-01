@@ -1,0 +1,8 @@
+# Example application config. Copy to application.yml or provide equivalent properties.
+# IMPORTANT: Set a strong app.jwt.secret in production. The secret must be at least 32 bytes for HS256.
+app:
+  jwt:
+    secret: "test-default-secret-key-which-is-at-least-32-bytes!!" # replace in production
+    expiration-ms: 86400000 # 1 day in milliseconds
+  cors:
+    allowed-origins: "http://localhost:5173"

@@ -14,7 +14,7 @@ import java.util.List;
  * Utility for creating and validating JWT tokens.
  * Tokens carry the employee number as subject and roles as a claim.
  */
-@Component
+
 public class JwtUtil {
 
     private final SecretKey key;
