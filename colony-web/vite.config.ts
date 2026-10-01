@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiTarget = env.VITE_API_TARGET || 'http://127.0.0.1:8082';
+  const apiTarget = env.VITE_API_TARGET || 'http://127.0.0.1:8083';
 
   return {
     base: '/colonyconnect/',
@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => {
         '/colonyconnectapi': {
           target: apiTarget,
           changeOrigin: true,
+        },
+        '/api': {
+          target: apiTarget,
+          changeOrigin: true,
+          rewrite: (path) => `/colonyconnectapi${path}`,
         },
       },
     },
