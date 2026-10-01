@@ -29,7 +29,7 @@ public class ComplaintController {
         return complaintService.listComplaints(null, null, null, null, null, null, null, empNo, null, null);
     }
 
-    @GetMapping("/complaints/{id}")
+    @GetMapping("/complaints/{id:[0-9]+}")
     public ComplaintDto getComplaint(@PathVariable Long id) {
         return complaintService.getComplaintDto(id);
     }

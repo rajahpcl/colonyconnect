@@ -1,0 +1,8 @@
+fix(security): provide JwtUtil bean in SecurityConfig; prefer session EMP_NO for /me; add example config and docs
+
+PR_DESCRIPTION.md
+colony-api/README.md
+colony-api/src/main/java/com/hpcl/colony/config/JwtUtil.java
+colony-api/src/main/java/com/hpcl/colony/config/SecurityConfig.java
+colony-api/src/main/java/com/hpcl/colony/controller/AuthController.java
+colony-api/src/main/resources/application.yml.example

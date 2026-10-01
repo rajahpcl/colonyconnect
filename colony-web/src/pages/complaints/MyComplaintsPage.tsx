@@ -8,7 +8,7 @@ export function MyComplaintsPage() {
   const navigate = useNavigate();
   const [searchFilter, setSearchFilter] = useState('');
 
-  const { data: complaints = [], isLoading, error } = useQuery({
+  const { data: complaints = [], isLoading, error, refetch } = useQuery({
     queryKey: ['my-complaints'],
     queryFn: () => listMyComplaints(),
   });
@@ -34,9 +34,17 @@ export function MyComplaintsPage() {
   }
 
   if (error) {
+    console.error('Failed to load complaints', error);
+    const message = (error as any)?.message ?? JSON.stringify(error);
     return (
       <div className="complaints-container">
-        <div className="error-message">Failed to load complaints</div>
+        <div className="error-message">
+          <p style={{ margin: 0, fontWeight: 600 }}>Failed to load complaints</p>
+          <p style={{ margin: '0.25rem 0 0 0' }}>{message}</p>
+          <button className="btn" style={{ marginTop: '0.75rem' }} onClick={() => refetch()}>
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
