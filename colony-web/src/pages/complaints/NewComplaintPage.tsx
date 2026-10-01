@@ -99,9 +99,20 @@ export function NewComplaintPage() {
     }
   }, [categoryId, setValue]);
 
-  const onSubmit = (data: NewComplaintForm) => {
+  const onSubmit = (data: NewComplaintForm, status: number) => {
     setFileError('');
-    createMutation(data);
+    const formData = new FormData();
+    formData.append('subcategoryId', data.subcategoryId);
+    formData.append('compDetails', data.compDetails);
+    formData.append('status', status.toString());
+    if (data.uploadFile && data.uploadFile[0]) {
+      formData.append('uploadFile', data.uploadFile[0]);
+    }
+    if (data.uploadFile1 && data.uploadFile1[0]) {
+      formData.append('uploadFile1', data.uploadFile1[0]);
+    }
+    formData.append('empNo', user?.empNo || '');
+    createMutation(formData);
   };
 
   if (user && !user.flatNo) {
@@ -154,7 +165,7 @@ export function NewComplaintPage() {
       </div>
 
       {/* Complaint Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="complaint-form">
+      <form className="complaint-form">
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="categoryId">
@@ -297,14 +308,23 @@ export function NewComplaintPage() {
               Cancel
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit((data) => onSubmit(data, 10))}
+              disabled={isPending}
+              className="btn btn-secondary mr-2"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit((data) => onSubmit(data, 20))}
               disabled={isPending}
               className="btn btn-primary"
             >
               <i className="fa fa-paper-plane" aria-hidden="true" style={{ marginRight: '6px' }} />
-              {isPending ? 'Submitting Request…' : 'Submit Complaint'}
+              {isPending ? 'Submitting…' : 'Submit'}
             </button>
-          </div>
+        </div>
         </div>
       </form>
     </div>

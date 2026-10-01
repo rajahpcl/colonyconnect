@@ -146,7 +146,7 @@ public class ComplaintService {
         c.setSubmitBy(empNo);
         c.setSubcategoryId(dto.getSubcategoryId());
         c.setCompDetails(dto.getCompDetails());
-        c.setStatus(20L); // Submitted status
+        c.setStatus(dto.getStatus() != null ? dto.getStatus() : 20L);
 
         List<com.hpcl.colony.entity.HousingAllotment> allotments = housingAllotmentRepository.findByEmpNo(empNo);
         if (!allotments.isEmpty()) {

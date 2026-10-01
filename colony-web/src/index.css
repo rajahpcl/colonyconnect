@@ -1562,3 +1562,28 @@ ul, li { list-style: none; padding: 0; margin: 0; }
     min-height: 48px;
   }
 }
+/* NEW: 3D Logo Animation & User Avatar Animation */
+.hpcl-logo-3d {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  animation: rotate3d 15s linear infinite;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.2));
+}
+
+@keyframes rotate3d {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+.animated-avatar {
+  animation: pulse 2s infinite;
+  border: 2px solid white;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}

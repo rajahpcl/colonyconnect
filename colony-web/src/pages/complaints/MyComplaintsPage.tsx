@@ -142,13 +142,13 @@ export function MyComplaintsPage() {
             <table className="complaints-table">
               <thead>
                 <tr>
-                  <th>Complaint ID</th>
+                  <th>Complaint Id</th>
                   <th>Flat No.</th>
-                  <th>Type</th>
-                  <th>Sub-Category</th>
+                  <th>Complaint Type</th>
+                  <th>Sub Category Type</th>
                   <th>Status</th>
-                  <th>Submitted Date</th>
-                  <th>Action</th>
+                  <th>Submit Date</th>
+                  <th>Edit/View</th>
                 </tr>
               </thead>
               <tbody>
@@ -162,7 +162,7 @@ export function MyComplaintsPage() {
                     <td>{complaint.subcategoryName}</td>
                     <td>
                       <span className={`status-badge status-${complaint.status?.toLowerCase()}`}>
-                        {complaint.statusName}
+                        {complaint.status === '10' ? 'Saved' : complaint.statusName}
                       </span>
                     </td>
                     <td>{new Date(complaint.submitDate).toLocaleDateString()}</td>

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -19,6 +20,12 @@ public class ComplaintController {
 
     @GetMapping("/complaints")
     public List<ComplaintDto> getMyComplaints(@RequestParam(required = false) String empNo) {
+        return complaintService.listComplaints(null, null, null, null, null, null, null, empNo, null, null);
+    }
+
+    @GetMapping("/complaints/my")
+    public List<ComplaintDto> getAuthenticatedUserComplaints() {
+        String empNo = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return complaintService.listComplaints(null, null, null, null, null, null, null, empNo, null, null);
     }
 

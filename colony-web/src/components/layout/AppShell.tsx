@@ -167,6 +167,7 @@ export function AppShell() {
         <div className="colony-header__inner">
           {/* Brand */}
             <NavLink to="/app/home" className="colony-header__brand" aria-label="ColonyConnect Home">
+              <img src={`${import.meta.env.BASE_URL}hpcl_master_logo.png`} alt="HPCL Logo" className="hpcl-logo-3d" />
               <div className="colony-header__titles">
                 <span className="colony-header__app-title">ColonyConnect</span>
                 <span className="colony-header__app-subtitle">Hindustan Petroleum Corporation Limited</span>
@@ -186,7 +187,7 @@ export function AppShell() {
               <img
                 src={`${import.meta.env.BASE_URL}user.png`}
                 alt=""
-                className="colony-user-chip__avatar"
+                className="colony-user-chip__avatar animated-avatar"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}hpcl_logo.png`;
                 }}
